@@ -3,7 +3,7 @@
 from ortools.constraint_solver import routing_enums_pb2
 from ortools.constraint_solver import pywrapcp
 
-from app.utils.utils import get_solution
+from app.utils.routing_solver_utils import get_solution, dedummify
 
 
 class Optimizer:

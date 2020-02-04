@@ -89,15 +89,20 @@ def resolve_routing_solver(*_, vehicles, requirements, costMatrix, distanceMatri
     data = create_data_model(vehicles, requirements,
                              costMatrix, distanceMatrix)
 
-    # manager = pywrapcp.RoutingIndexManager(
-    #     len(data['distance_matrix']
-    #         ), data['num_vehicles'], data["starts"], data["ends"])
+    manager = pywrapcp.RoutingIndexManager(
+        len(data['distance_matrix']
+            ), data['num_vehicles'], data["starts"], data["ends"])
 
-    # optimizer = Optimizer(objective["firstSolutionStrategy"]["id"])
+    optimizer = Optimizer(objective["firstSolutionStrategy"]["id"],
+                          objective["localSearchStrategy"]["id"],
+                          objective["solutionLimit"]
+                          )
 
-    # raw_solution = optimizer.optimize(data, manager, routing)
+    routing = pywrapcp.RoutingModel(manager)
 
-    # fix raw_solution, and return prettified solution
+    raw_solution = optimizer.optimize(data, manager, routing)
+
+    print(f"raw_solution: {raw_solution}")
 
     return "Success"
 

@@ -479,7 +479,8 @@ def create_data_model(vehicles, requirements, costMatrix, distanceMatrix):
                              for m in data["cost_matrixes"]]
 
     # data["vessel_speeds"] = [1, 1, 1]
-    data["vehicle_starting_time"] = [0, 0, 0]
+    data["vehicle_starting_time"] = [
+        0 for _ in range(len(data["vessel_speeds"]))]
 
     data["time_matrices"] = [np.array(data["distance_matrix"]) /
                              speed for speed in data["vessel_speeds"]]
@@ -531,8 +532,8 @@ def create_data_model(vehicles, requirements, costMatrix, distanceMatrix):
 
     data['num_vehicles'] = len(data["vessel_speeds"])
     # data['depot'] = 0
-    data["starts"] = [0, 0, 0]
-    data["ends"] = [0, 0, 0]
+    data["starts"] = [0 for _ in range(len(data["vessel_speeds"]))]
+    data["ends"] = [0 for _ in range(len(data["vessel_speeds"]))]
 
     # data["demands_to_pickup"] = [0, 2, -2, 3, -3]
     # data["vehicle_volume_capacities"] = [8, 8, 12]

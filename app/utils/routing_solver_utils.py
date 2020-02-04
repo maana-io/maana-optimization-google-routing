@@ -1,7 +1,24 @@
 from typing import List, Tuple
 from copy import deepcopy
 
-from current_data_types import Cargo
+
+class Cargo:
+    def __init__(self, origin=None,
+                 dest=None,
+                 volume=None,
+                 weight=None,
+                 laycanFrom=None,
+                 laycanTo=None,
+                 dischargeDateFrom=None,
+                 dischargeDateTo=None):
+        self.origin = origin
+        self.destination = dest
+        self.volume = volume
+        self.weight = weight
+        self.laycanFrom = laycanFrom
+        self.laycanTo = laycanTo
+        self.dischargeDateFrom = dischargeDateFrom
+        self.dischargeDateTo = dischargeDateTo
 
 
 def buildDistanceMatrix(raw_distances, ports):
@@ -302,4 +319,4 @@ def create_draft_dummy_cargos(vessel_empty_draft, vessel_immersion_summer, from_
                   laycanTo=0, dischargeDateFrom=0, dischargeDateTo=0)
         )
 
-    return cargo
+    return cargos

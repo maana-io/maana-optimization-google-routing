@@ -11,24 +11,20 @@ import numpy as np
 from dotenv import load_dotenv
 import os
 
-from app.my_types.type_def_strings import pickups_deliveries_types
+from app.my_types.type_def_strings_2 import optimizer_types
 from app.resolvers.resolvers import resolve_pickups_and_deliveries_mapper, \
-    resolve_solverAssignmentWithSizes_mapper, \
-    resolve_solveLinearCPProblem_mapper, \
-    resolve_solveRealLinearProblem_mapper
+    resolve_routing_solver_mapper
 
 
 # Load environment variables
 load_dotenv()
 
-type_defs = gql(pickups_deliveries_types)
+type_defs = gql(optimizer_types)
 
 query = QueryType()
 
-resolve_pickups_and_deliveries_mapper(query)
-resolve_solverAssignmentWithSizes_mapper(query)
-resolve_solverAssignmentWithSizes_mapper(query)
-resolve_solveRealLinearProblem_mapper(query)
+# resolve_pickups_and_deliveries_mapper(query)
+resolve_routing_solver_mapper(query)
 
 # Create executable GraphQL schema
 schema = make_executable_schema(type_defs, [query])

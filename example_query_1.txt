@@ -1,0 +1,65 @@
+query {
+  solverMakeSchedules(cost: {
+    id: "cost"
+    distanceMatrix: [ {
+      id: "row0",
+      values: [0,1,1,1,1]
+    },
+      {
+        id: "row1",
+        values: [1,0,1,1,1]
+      },
+      
+      {
+        id: "row2",
+        values: [1,1,0,1,1]
+      },
+      
+      {
+        id: "row3",
+        values: [1,1,1,0,1]
+      },
+      
+      {
+        id:"row4",
+        values: [1,1,1,1,0]
+      }
+      
+    ]
+    
+  },
+  
+  constraints: {
+    id: "constraints",
+    numVehicles: 2,
+    depot: 0,
+    pickupsDeliveries: [
+      {
+        id: "pd0",
+        origin: 1,
+        destination: 2,
+      },
+      
+      {
+        id: "pd1",
+        origin: 3,
+        destination: 4
+      }
+    ]
+    
+  },
+    
+  objectives: {
+    id: "objectives",
+    firstSolutionStrategy: "can ignore for now",
+    localSearchStrategy: "also can ignore"
+  }
+  
+  ) {
+    id
+    vesselSchedules {
+      id
+      nodesToVisit
+    }
+  }
+}

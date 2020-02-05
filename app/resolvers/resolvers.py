@@ -108,31 +108,6 @@ def resolve_routing_solver(*_, vehicles, requirements, costMatrix, distanceMatri
     temp = raw_solution["d_solution"]
     print(f"dedummyfied solution: {temp}")
 
-    # debug
-    debug_data = {'id': '10',
-                  'vehicleSchedules': [{'timeOfRoute': 5, 'vehiclePath': [], 'id': 9}]}
-
-    debug_data_2 = {'vehicleSchedules': [{'id': '1',
-                                          'vehiclePath': [{'id': '1',
-                                                           'routeNodeId': 0,
-                                                           'minTime': 0,
-                                                           'maxTime': 0,
-                                                           'cost': 0,
-                                                           'draft': 0,
-                                                           'volume': 0,
-                                                           'requirementIndex': None,
-                                                           'action': {'id': '1', 'action': {'value': None}}},
-                                                          ],
-                                          'timeOfRoute': 10,
-                                          'routeLoad': 0,
-                                          'costOfRoute': 11}],
-                    'id': '1',
-                    'totalTime': 10,
-                    'totalVolume': 0,
-                    'totalCost': 11}
-
-    # return debug_data_2
-
     return raw_solution["d_solution"]
 
 

@@ -224,10 +224,6 @@ def convert_cargo(input_cargos):
     return cargos
 
 
-def class_to_json(my_class):
-    return json.loads(json.dumps(my_class, default=lambda o: o.__dict__))
-
-
 def get_ports_mapping(cargos):
     ports = set()
     for cargo in cargos:
@@ -289,111 +285,14 @@ def create_data_model(vehicles, requirements, costMatrix, distanceMatrix):
 
     data = {}
 
-    # vehicles = []
-    # vehicles.append(make_vehicle(volumeCapacity=8,
-    #                              weightCapacity=8,
-    #                              speed=1,
-    #                              draft=6,
-    #                              immersion_summer=1))
-
-    # vehicles.append(make_vehicle(volumeCapacity=8,
-    #                              weightCapacity=8,
-    #                              speed=1,
-    #                              draft=0,
-    #                              immersion_summer=1))
-
-    # vehicles.append(make_vehicle(volumeCapacity=12,
-    #                              weightCapacity=12,
-    #                              speed=1,
-    #                              draft=0,
-    #                              immersion_summer=1))
-
-    # vehicles_json = [class_to_json(vehicle) for vehicle in vehicles]
-
     vehicle_data = convert_vehicle_data(vehicles_json)
     data.update(vehicle_data)
-
-    # distance_matrix = make_distance_matrix(rows=[[0, 5, 6, 5],
-    #                                              [5, 0, 9, 9],
-    #                                              [6, 9, 0, 8],
-    #                                              [5, 9, 8, 0]
-    #                                              ])
-
-    # # distance_matrix_dict = json.loads(
-    # #     json.dumps(distance_matrix, default=lambda o: o.__dict__))
-
-    # distance_matrix_json = class_to_json(distance_matrix)
 
     distance_matrix_data = convert_distance_matrix(distance_matrix_json)
     data.update(distance_matrix_data)
 
-    # cost_matrices = CostMatrices()
-
-    # cost_matrices.costMatrices.append(make_cost_of_vehicle_matrix(rows=[
-    #     [0, 6, 6, 5],
-    #     [6, 0, 9, 9],
-    #     [6, 9, 0, 7],
-    #     [5, 9, 7, 0],
-    # ]))
-
-    # cost_matrices.costMatrices.append(make_cost_of_vehicle_matrix(rows=[
-    #     [0, 5, 6, 5],
-    #     [5, 0, 9, 9],
-    #     [6, 9, 0, 8],
-    #     [5, 9, 8, 0],
-    # ]))
-
-    # cost_matrices.costMatrices.append(make_cost_of_vehicle_matrix(rows=[
-    #     [0, 5, 6, 5],
-    #     [5, 0, 9, 9],
-    #     [6, 9, 0, 8],
-    #     [5, 9, 8, 0],
-    # ]))
-
-    # cost_matrices_json = [class_to_json(cost_matrix)
-    #                       for cost_matrix in cost_matrices.costMatrices]
-
     cost_matrices_data = convert_cost_matrices(cost_matrices_json)
     data.update(cost_matrices_data)
-
-    # cargos = []
-    # cargos.append(make_cargo(origin="a",
-    #                          destination="b",
-    #                          load_start=1,
-    #                          load_end=3,
-    #                          unload_start=2,
-    #                          unload_end=8,
-    #                          volume=2,
-    #                          weight=2))
-
-    # cargos.append(make_cargo(origin="a",
-    #                          destination="d",
-    #                          load_start=1,
-    #                          load_end=3,
-    #                          unload_start=2,
-    #                          unload_end=17,
-    #                          volume=2,
-    #                          weight=2))
-
-    # cargos.append(make_cargo(origin="c",
-    #                          destination="d",
-    #                          load_start=1,
-    #                          load_end=3,
-    #                          unload_start=11,
-    #                          unload_end=20,
-    #                          volume=3,
-    #                          weight=3))
-
-    # cargos.append(make_cargo(origin="a",
-    #                          destination="d",
-    #                          load_start=9,
-    #                          load_end=11,
-    #                          unload_start=18,
-    #                          unload_end=25,
-    #                          volume=2,
-    #                          weight=2))
-
-    # cargos_json = [class_to_json(cargo) for cargo in cargos]
 
     original_cargos = convert_cargo(cargos_json)
     port_to_ind = get_ports_mapping(original_cargos)
@@ -415,18 +314,6 @@ def create_data_model(vehicles, requirements, costMatrix, distanceMatrix):
 
     data["draft_dummy_origin"] = draft_dummy_origin
     data["draft_dummy_destination"] = draft_dummy_destination
-
-    # original_cargos = [
-
-    #     Cargo(origin=1, dest=2, volume=2, weight=2, laycanFrom=1,
-    #           laycanTo=3, dischargeDateFrom=2, dischargeDateTo=8),
-    #     Cargo(origin=1, dest=4, volume=2, weight=2, laycanFrom=1,
-    #           laycanTo=3, dischargeDateFrom=2, dischargeDateTo=17),
-    #     Cargo(origin=3, dest=4, volume=3, weight=3, laycanFrom=1, laycanTo=3,
-    #           dischargeDateFrom=11, dischargeDateTo=20),
-    #     Cargo(origin=1, dest=4, volume=2, weight=2, laycanFrom=9,
-    #           laycanTo=11, dischargeDateFrom=18, dischargeDateTo=25),
-    # ]
 
     cargos = draft_dummy_cargos + original_cargos
 
@@ -451,26 +338,6 @@ def create_data_model(vehicles, requirements, costMatrix, distanceMatrix):
     data["volume_demands"] = volume_demands
     data["weight_demands"] = weight_demands
     data["draft_demands"] = draft_demands
-
-    # data["cost_matrixes"] = [[[0, 0, 0, 0, 0],
-    #                           [0, 0, 6, 6, 5],
-    #                           [0, 6, 0, 9, 9],
-    #                           [0, 6, 9, 0, 7],
-    #                           [0, 5, 9, 7, 0],
-    #                           ],
-    #                          [[0, 0, 0, 0, 0],
-    #                           [0, 0, 5, 6, 5],
-    #                           [0, 5, 0, 9, 9],
-    #                           [0, 6, 9, 0, 8],
-    #                           [0, 5, 9, 8, 0],
-    #                           ],
-    #                          [[0, 0, 0, 0, 0],
-    #                           [0, 0, 5, 6, 5],
-    #                           [0, 5, 0, 9, 9],
-    #                           [0, 6, 9, 0, 8],
-    #                           [0, 5, 9, 8, 0],
-    #                           ],
-    #                          ]
 
     data["cost_matrixes"] = [add_dummy_entries_for_draft(
         cost_matrix, 0) for cost_matrix in data["cost_matrixes"]]

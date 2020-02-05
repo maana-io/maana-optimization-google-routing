@@ -1486,7 +1486,7 @@ type Query {
         costMatrix: CostMatricesAsInput,
         distanceMatrix: DistanceMatrixAsInput,
         objective: ObjectiveAsInput
-        ): String
+        ): RoutingSolution
   
   allRealLinearConstraints(
     

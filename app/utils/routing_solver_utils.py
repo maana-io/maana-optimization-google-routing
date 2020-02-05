@@ -1,6 +1,8 @@
 from typing import List, Tuple
 from copy import deepcopy
 
+import random as rn
+
 
 class Cargo:
     def __init__(self, origin=None,
@@ -101,9 +103,9 @@ def dedummify(schedule, dummy_to_ind):
 
     new_schedule = deepcopy(schedule)
 
-    for vehicle_id, vehicle in new_schedule["vehicles"].items():
-        new_schedule["vehicles"][vehicle_id]["vehicle_path"] = dedummify_vehicle_path(
-            vehicle["vehicle_path"], dummy_to_ind)
+    for vehicle_id, vehicle in enumerate(new_schedule["vehicleSchedules"]):
+        new_schedule["vehicleSchedules"][vehicle_id]["vehiclePath"]["step"] = dedummify_vehicle_path(
+            vehicle["vehiclePath"]["step"], dummy_to_ind)
 
     return new_schedule
 
@@ -114,9 +116,9 @@ def dedummify_vehicle_path(vehicle_path, dummy_to_ind):
 
     for path in vehicle_path:
 
-        orig_node = dummy_to_ind[path["Node"]]
+        orig_node = dummy_to_ind[path["routeNodeId"]]
         new_path = deepcopy(path)
-        new_path["Node"] = orig_node
+        new_path["routeNodeId"] = orig_node
         d_vehicle_path.append(new_path)
 
     return d_vehicle_path
@@ -146,7 +148,7 @@ def add_dummy_entries_for_draft(matrix, cost):
 def get_solution(data, manager, routing, assignment):
 
     solution = {}
-    solution["vehicles"] = {}
+    solution["vehicleSchedules"] = []
 
     time_dimension = routing.GetDimensionOrDie('time_for_vehicles')
     cost_dimension = routing.GetDimensionOrDie("cost_for_vehicles")
@@ -214,26 +216,30 @@ def get_solution(data, manager, routing, assignment):
 
             if "draft_demands" in data:
 
-                step = {"Node": manager.IndexToNode(index),
-                        "min_time": assignment.Min(time_var),
-                        "max_time": assignment.Max(time_var),
-                        "cost": assignment.Min(cost_var),
-                        "draft": assignment.Min(draft_var),
-                        "volume": route_volume,
-                        "cargo_index": cargo_index,
-                        "action": action,
-                        }
+                step = {
+                    "id": str(rn.randint(1, 10000000)),
+                    "routeNodeId": manager.IndexToNode(index),
+                    "minTime": assignment.Min(time_var),
+                    "maxTime": assignment.Max(time_var),
+                    "cost": assignment.Min(cost_var),
+                    "draft": assignment.Min(draft_var),
+                    "volume": route_volume,
+                    "requirementIndex": cargo_index,
+                    "action": {"id": "1", "action": {"value": action}},
+                }
 
             else:
 
-                step = {"Node": manager.IndexToNode(index),
-                        "min_time": assignment.Min(time_var),
-                        "max_time": assignment.Max(time_var),
-                        "cost": assignment.Min(cost_var),
-                        "volume": route_volume,
-                        "cargo_index": cargo_index,
-                        "action": action,
-                        }
+                step = {
+                    "id": str(rn.randint(1, 10000000)),
+                    "routeNodeId": manager.IndexToNode(index),
+                    "minTime": assignment.Min(time_var),
+                    "maxTime": assignment.Max(time_var),
+                    "cost": assignment.Min(cost_var),
+                    "volume": route_volume,
+                    "requirementIndex": cargo_index,
+                    "action": {"id": "1", "action": {"value": action}},
+                }
 
             vehicle_path.append(step)
 
@@ -261,15 +267,17 @@ def get_solution(data, manager, routing, assignment):
                 assignment.Min(cost_var),
             )
 
-        step = {"Node": manager.IndexToNode(index),
-                "min_time": assignment.Min(time_var),
-                "max_time": assignment.Max(time_var),
-                "cost": assignment.Min(cost_var),
-                "volume": route_volume,
-                "weight": route_weight,
-                "cargo_index": cargo_index,
-                "action": action,
-                }
+        step = {
+            "id": str(rn.randint(1, 10000000)),
+            "routeNodeId": manager.IndexToNode(index),
+            "minTime": assignment.Min(time_var),
+            "maxTime": assignment.Max(time_var),
+            "cost": assignment.Min(cost_var),
+            "volume": route_volume,
+            "weight": route_weight,
+            "requirementIndex": cargo_index,
+            "action": {"id": "1", "action": {"value": action}},
+        }
 
         vehicle_path.append(step)
 
@@ -282,10 +290,11 @@ def get_solution(data, manager, routing, assignment):
             assignment.Min(cost_var))
 
         vehicle_schedule = {
-            "vehicle_path": vehicle_path,
-            "time_of_route": assignment.Min(time_var),
-            "route_load": route_volume,
-            "cost_of_route": assignment.Min(cost_var)
+            "id": str(rn.randint(1, 10000000)),
+            "vehiclePath": {"id": str(rn.randint(1, 10000000)), "step": vehicle_path},
+            "timeOfRoute": assignment.Min(time_var),
+            "routeLoad": route_volume,
+            "costOfRoute": assignment.Min(cost_var)
         }
 
         print(plan_output)
@@ -293,15 +302,16 @@ def get_solution(data, manager, routing, assignment):
         total_volume += route_volume
         total_cost += assignment.Min(cost_var)
 
-        solution["vehicles"][vehicle_id] = vehicle_schedule
+        solution["vehicleSchedules"].append(vehicle_schedule)
 
     print('Total time of all routes: {}min'.format(total_time))
     print('Total Volume of all routes: {}'.format(total_volume))
     print('Total cost of all routes: {}'.format(total_cost))
 
-    solution["total_time"] = total_time
-    solution["total_volume"] = total_volume
-    solution["total_cost"] = total_cost
+    solution["id"] = str(rn.randint(1, 10000000))
+    solution["totalTime"] = total_time
+    solution["totalVolume"] = total_volume
+    solution["totalCost"] = total_cost
 
     return solution
 
@@ -320,3 +330,22 @@ def create_draft_dummy_cargos(vessel_empty_draft, vessel_immersion_summer, from_
         )
 
     return cargos
+
+
+# def reformat_solution(d_solution):
+
+#     solution = {}
+
+#     solution["totalVolume"] = d["total_volume"]
+#     solution["totalCost"] = d["total_cost"]
+#     solution["totalTime"] = d["total_time"]
+
+#     vehicle_paths = []
+#     for vehicle in solution["vehicles"]:
+#         vehicle_path = {}
+#         vehicle_path["timeOfRoute"] = vehicle["time_of_route"]
+#         vehicle_path["routeLoad"] = vehicle["route_load"]
+#         vehicle_path["costOfRoute"] = vehicle["cost_of_route"]
+#         vehicle_path["vehiclePath"] = vehicle["vehicle_path"]
+
+#     solution["vehicleSchedules"] = None

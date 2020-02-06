@@ -177,6 +177,14 @@ def convert_distance_matrix(input_distances):
     return data
 
 
+def get_ports_mapping(input_distances):
+
+    port_to_ind = {row["id"]: ind for ind,
+                   row in enumerate(input_distances["rows"], 1)}
+
+    return port_to_ind
+
+
 def convert_cost_matrix(input_cost_of_vehicle_routes_matrix):
 
     cost_matrix = []
@@ -191,9 +199,6 @@ def convert_cost_matrix(input_cost_of_vehicle_routes_matrix):
 
 
 def convert_cost_matrices(input_cost_matrices):
-
-    print("input_cost_matrices")
-    print(input_cost_matrices)
 
     data = {}
     cost_matrices = []
@@ -227,21 +232,21 @@ def convert_cargo(input_cargos):
     return cargos
 
 
-def get_ports_mapping(cargos):
-    ports = set()
-    for cargo in cargos:
+# def get_ports_mapping(cargos):
+#     ports = set()
+#     for cargo in cargos:
 
-        ports.add(cargo.origin)
-        ports.add(cargo.destination)
+#         ports.add(cargo.origin)
+#         ports.add(cargo.destination)
 
-    port_to_ind = {p: i for i, p in enumerate(sorted(list(ports)), 1)}
-    return port_to_ind
+#     port_to_ind = {p: i for i, p in enumerate(sorted(list(ports)), 1)}
+#     return port_to_ind
 
 
 def modify_cargo_ports(cargos, port_to_ind):
     for cargo in cargos:
-        cargo.origin = port_to_ind[cargo.origin]
-        cargo.destination = port_to_ind[cargo.destination]
+        cargo.origin = port_to_ind[cargo.origin.split("::")[0]]
+        cargo.destination = port_to_ind[cargo.destination.split("::")[0]]
 
     return cargos
 
@@ -252,13 +257,16 @@ def add_port_draft(cargos_json, port_to_ind):
 
     port_to_max_draft = {}
     for cargo in cargos_json:
-        port_to_max_draft[cargo["routePair"]["origin"]["id"]
+        port_to_max_draft[cargo["routePair"]["origin"]["id"].split("::")[0]
                           ] = cargos_json[0]["routePair"]["origin"]["dimension"]["depth"]["max"]
-        port_to_max_draft[cargo["routePair"]["origin"]["id"]
+        port_to_max_draft[cargo["routePair"]["destination"]["id"].split("::")[0]
                           ] = cargos_json[0]["routePair"]["destination"]["dimension"]["depth"]["max"]
 
     ind_to_draft = {
         port_to_ind[port_id]: draft for port_id, draft in port_to_max_draft.items()}
+
+    print("ind_to_draft")
+    print(ind_to_draft)
 
     large_number = 1000
 
@@ -266,14 +274,16 @@ def add_port_draft(cargos_json, port_to_ind):
 
     port_to_max_draft_orig.update(ind_to_draft)
     port_to_max_draft_orig[len(ind_to_draft) +
-                           2] = large_number  # For draft dummy
+                           1] = large_number  # For draft dummy
     port_to_max_draft_orig[len(ind_to_draft) +
-                           3] = large_number  # For draft dummy
+                           2] = large_number  # For draft dummy
+
+    print("port_to_max_draft_orig")
+    print(port_to_max_draft_orig)
 
     draft_data = {}
 
-    draft_data["port_max_draft_orig"] = {
-        0: large_number, 1: 6, 2: 6, 3: 6, 4: 6, 5: large_number, 6: large_number}
+    draft_data["port_max_draft_orig"] = port_to_max_draft_orig
 
     return draft_data
 
@@ -298,8 +308,9 @@ def create_data_model(vehicles, requirements, costMatrix, distanceMatrix):
     data.update(cost_matrices_data)
 
     original_cargos = convert_cargo(cargos_json)
-    
-    port_to_ind = get_ports_mapping(original_cargos)
+
+    # port_to_ind = get_ports_mapping(original_cargos)
+    port_to_ind = get_ports_mapping(distance_matrix_json)
     original_cargos = modify_cargo_ports(original_cargos, port_to_ind)
 
     data["total_revenue"] = sum(c.revenue for c in original_cargos)

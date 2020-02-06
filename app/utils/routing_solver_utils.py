@@ -301,6 +301,7 @@ def get_solution(data, manager, routing, assignment):
         total_time += assignment.Min(time_var)
         total_volume += route_volume
         total_cost += assignment.Min(cost_var)
+        
 
         solution["vehicleSchedules"].append(vehicle_schedule)
 
@@ -312,6 +313,7 @@ def get_solution(data, manager, routing, assignment):
     solution["totalTime"] = total_time
     solution["totalVolume"] = total_volume
     solution["totalCost"] = total_cost
+    solution["totalProfit"] = data["total_revenue"] - total_cost
 
     return solution
 

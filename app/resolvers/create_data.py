@@ -17,7 +17,8 @@ class Cargo:
                  laycanFrom=None,
                  laycanTo=None,
                  dischargeDateFrom=None,
-                 dischargeDateTo=None):
+                 dischargeDateTo=None,
+                 revenue=None):
         self.origin = origin
         self.destination = dest
         self.volume = volume
@@ -26,6 +27,7 @@ class Cargo:
         self.laycanTo = laycanTo
         self.dischargeDateFrom = dischargeDateFrom
         self.dischargeDateTo = dischargeDateTo
+        self.revenue = revenue
 
 # from current_data_types import Cargo
 
@@ -218,6 +220,7 @@ def convert_cargo(input_cargos):
         cargo.laycanTo = input_cargo["loadWindow"]["timeWindow"]["end"]
         cargo.dischargeDateFrom = input_cargo["unloadWindow"]["timeWindow"]["start"]
         cargo.dischargeDateTo = input_cargo["unloadWindow"]["timeWindow"]["end"]
+        cargo.revenue = input_cargo["revenue"]
 
         cargos.append(cargo)
 
@@ -295,9 +298,11 @@ def create_data_model(vehicles, requirements, costMatrix, distanceMatrix):
     data.update(cost_matrices_data)
 
     original_cargos = convert_cargo(cargos_json)
+    
     port_to_ind = get_ports_mapping(original_cargos)
     original_cargos = modify_cargo_ports(original_cargos, port_to_ind)
 
+    data["total_revenue"] = sum(c.revenue for c in original_cargos)
     data["distance_matrix"] = add_dummy_entries_for_draft(
         data["distance_matrix"], 100 * 10000 * 10000)
 

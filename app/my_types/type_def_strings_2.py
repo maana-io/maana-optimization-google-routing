@@ -252,9 +252,11 @@ input AddRoutingSolutionInput {
   totalVolume: Int
   totalCost: Int
   totalTime: Int
-  vehicleSchedules: [ID]
   totalProfit: Float
   timeWindow: ID
+  vehicleSchedules: [ID]
+  
+  
 }
 
 
@@ -2733,9 +2735,10 @@ type RoutingSolution {
   totalVolume: Int
   totalCost: Int
   totalTime: Int
-  vehicleSchedules: [VehicleSchedule]
   totalProfit: Float
   timeWindow: TimeWindow
+  vehicleSchedules: [VehicleSchedule]
+  
 }
 
 type Row {
@@ -3041,9 +3044,11 @@ input UpdateRoutingSolutionInput {
   totalVolume: Int
   totalCost: Int
   totalTime: Int
-  vehicleSchedules: [ID]
   totalProfit: Float
   timeWindow: ID
+  vehicleSchedules: [ID]
+  
+  
 }
 
 

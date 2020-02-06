@@ -232,17 +232,6 @@ def convert_cargo(input_cargos):
     return cargos
 
 
-# def get_ports_mapping(cargos):
-#     ports = set()
-#     for cargo in cargos:
-
-#         ports.add(cargo.origin)
-#         ports.add(cargo.destination)
-
-#     port_to_ind = {p: i for i, p in enumerate(sorted(list(ports)), 1)}
-#     return port_to_ind
-
-
 def modify_cargo_ports(cargos, port_to_ind):
     for cargo in cargos:
         cargo.origin = port_to_ind[cargo.origin.split("::")[0]]
@@ -369,11 +358,6 @@ def create_data_model(vehicles, requirements, costMatrix, distanceMatrix):
                              speed for speed in data["vessel_speeds"]]
 
     data["port_to_allowed_vehicles"] = []  # [{"port": 3, "vehicles": [1]}]
-
-    # large_number = 1000
-
-    # data["port_max_draft_orig"] = {
-    #     0: large_number, 1: 6, 2: 6, 3: 6, 4: 6, 5: large_number, 6: large_number}
 
     draft_data = add_port_draft(cargos_json, port_to_ind)
     data.update(draft_data)

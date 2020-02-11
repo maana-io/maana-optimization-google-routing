@@ -145,7 +145,9 @@ def convert_vehicle_data(vehicles):
                     "vehicle_weight_capacities": [],
                     "vessel_speeds": [],
                     "vessel_empty_draft": [],
-                    "immersion_summer": []}
+                    "immersion_summer": [],
+                    "starting_locations": [],
+                    }
 
     for vehicle in vehicles:
         vehicle_data["vehicle_volume_capacities"].append(
@@ -156,8 +158,9 @@ def convert_vehicle_data(vehicles):
         vehicle_data["vessel_empty_draft"].append(
             vehicle["vehicleDimensions"]["depth"]["empty"])
         vehicle_data["immersion_summer"].append(
-            vehicle["vehicleDimensions"]["depth"]["massMultiplier"]
-        )
+            vehicle["vehicleDimensions"]["depth"]["massMultiplier"])
+        vehicle_data["starting_locations"].append(
+            vehicle["startingLocation"]["id"])
 
     return vehicle_data
 
@@ -303,27 +306,34 @@ def create_data_model(vehicles, requirements, costMatrix, distanceMatrix):
     original_cargos = modify_cargo_ports(original_cargos, port_to_ind)
 
     data["total_revenue"] = sum(c.revenue for c in original_cargos)
-    data["distance_matrix"] = add_dummy_entries_for_draft(
-        data["distance_matrix"], 100 * 10000 * 10000)
+    # data["distance_matrix"] = add_dummy_entries_for_draft(
+    #     data["distance_matrix"], 100 * 10000 * 10000)
 
     data["orig_distance_matrix"] = data["distance_matrix"]
 
-    draft_dummy_origin = len(data["distance_matrix"]) - 2
-    draft_dummy_destination = len(data["distance_matrix"]) - 1
+    # draft_dummy_origin = len(data["distance_matrix"]) - 2
+    # draft_dummy_destination = len(data["distance_matrix"]) - 1
+
+    draft_dummy_origin = 0
+    # draft_dummy_destinations = [1, 1, 3]
+    draft_dummy_destinations = [port_to_ind[x]
+                                for x in data["starting_locations"]]
 
     draft_dummy_cargos = create_draft_dummy_cargos(data["vessel_empty_draft"],
                                                    data["immersion_summer"],
                                                    from_port=draft_dummy_origin,
-                                                   to_port=draft_dummy_destination
+                                                   starting_locations=draft_dummy_destinations
                                                    )
 
-    data["draft_dummy_origin"] = draft_dummy_origin
-    data["draft_dummy_destination"] = draft_dummy_destination
+    # data["draft_dummy_origin"] = draft_dummy_origin
+    # data["draft_dummy_destination"] = draft_dummy_destinations
 
-    cargos = draft_dummy_cargos + original_cargos
+    # cargos = draft_dummy_cargos + original_cargos
 
-    new_dist, dummy_to_ind, volume_demands, weight_demands, pickups_deliveries, time_windows = dummify(data["distance_matrix"],
-                                                                                                       cargos)
+    temp = dummify(data["distance_matrix"],
+                   draft_dummy_cargos, original_cargos)
+
+    new_dist, dummy_to_ind, volume_demands, weight_demands, pickups_deliveries, time_windows = temp
     n = len(data["distance_matrix"])
     draft_dummy_inds_to_zero_out = range(
         n + 1, n + 2 * len(draft_dummy_cargos), 2)
@@ -344,10 +354,10 @@ def create_data_model(vehicles, requirements, costMatrix, distanceMatrix):
     data["weight_demands"] = weight_demands
     data["draft_demands"] = draft_demands
 
-    data["cost_matrixes"] = [add_dummy_entries_for_draft(
-        cost_matrix, 0) for cost_matrix in data["cost_matrixes"]]
+    # data["cost_matrixes"] = [add_dummy_entries_for_draft(
+    #     cost_matrix, 0) for cost_matrix in data["cost_matrixes"]]
 
-    data["cost_matrixes"] = [dummify(m, cargos)[0]
+    data["cost_matrixes"] = [dummify(m, draft_dummy_cargos, original_cargos)[0]
                              for m in data["cost_matrixes"]]
 
     # data["vessel_speeds"] = [1, 1, 1]
@@ -379,7 +389,7 @@ def create_data_model(vehicles, requirements, costMatrix, distanceMatrix):
 
     # Just mocked for now
     data["load_and_dropoff_times"] = [
-        {"load": 0, "dropoff": 0} for _ in range(len(cargos))]
+        {"load": 0, "dropoff": 0} for _ in range(len(original_cargos) + len(draft_dummy_cargos))]
 
     assert(len(data["pickups_deliveries"]) ==
            len(data["load_and_dropoff_times"]))

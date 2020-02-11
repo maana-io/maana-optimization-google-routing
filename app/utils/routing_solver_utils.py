@@ -67,7 +67,7 @@ def add_dummy_entry(data: List[List[int]], n: int) -> (List[List[int]], int):
     return new_data, len(new_data) - 1
 
 
-def dummify(matrix, cargos):
+def dummify(matrix, draft_dummy_cargos, original_cargos):
     dummy_to_ind = {x: x for x in range(len(matrix))}
     volume_demands = {x: 0 for x in range(len(matrix))}
     weight_demands = {x: 0 for x in range(len(matrix))}
@@ -77,8 +77,23 @@ def dummify(matrix, cargos):
     # matrix, new_ind_origin = add_dummy_entry(matrix, 0)
     # matrix, new_ind_origin = add_dummy_entry(matrix, 0)
 
-    for cargo in cargos:
+    for cargo in draft_dummy_cargos:
 
+        matrix, new_ind_origin = add_dummy_entry(matrix, cargo.origin)
+        dummy_to_ind[new_ind_origin] = cargo.origin
+        volume_demands[new_ind_origin] = cargo.volume
+        weight_demands[new_ind_origin] = cargo.weight
+        matrix, new_ind_dest = add_dummy_entry(matrix, cargo.destination)
+        dummy_to_ind[new_ind_dest] = cargo.destination
+        volume_demands[new_ind_dest] = 0
+        weight_demands[new_ind_dest] = 0
+
+        pickup_deliveries.append((new_ind_origin, new_ind_dest))
+        time_windows.append(
+            {"load_window": (cargo.laycanFrom, cargo.laycanTo),
+             "dropoff_window": (cargo.dischargeDateFrom, cargo.dischargeDateTo)})
+
+    for cargo in original_cargos:
         matrix, new_ind_origin = add_dummy_entry(matrix, cargo.origin)
         dummy_to_ind[new_ind_origin] = cargo.origin
         volume_demands[new_ind_origin] = cargo.volume
@@ -301,7 +316,6 @@ def get_solution(data, manager, routing, assignment):
         total_time += assignment.Min(time_var)
         total_volume += route_volume
         total_cost += assignment.Min(cost_var)
-        
 
         solution["vehicleSchedules"].append(vehicle_schedule)
 
@@ -318,16 +332,16 @@ def get_solution(data, manager, routing, assignment):
     return solution
 
 
-def create_draft_dummy_cargos(vessel_empty_draft, vessel_immersion_summer, from_port, to_port):
+def create_draft_dummy_cargos(vessel_empty_draft, vessel_immersion_summer, from_port, starting_locations):
 
     cargos = []
-    for draft, immersion_summer in zip(vessel_empty_draft, vessel_immersion_summer):
+    for draft, immersion_summer, starting_location in zip(vessel_empty_draft, vessel_immersion_summer, starting_locations):
 
         weight_representing_draft = draft * immersion_summer
 
         # I want to set weight to 0, but it makes the problem unsolvable, (1 does the same thing)
         cargos.append(
-            Cargo(origin=from_port, dest=to_port, volume=0, weight=weight_representing_draft, laycanFrom=0,
+            Cargo(origin=from_port, dest=starting_location, volume=0, weight=weight_representing_draft, laycanFrom=0,
                   laycanTo=0, dischargeDateFrom=0, dischargeDateTo=0)
         )
 

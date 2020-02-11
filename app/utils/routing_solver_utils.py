@@ -346,22 +346,3 @@ def create_draft_dummy_cargos(vessel_empty_draft, vessel_immersion_summer, from_
         )
 
     return cargos
-
-
-# def reformat_solution(d_solution):
-
-#     solution = {}
-
-#     solution["totalVolume"] = d["total_volume"]
-#     solution["totalCost"] = d["total_cost"]
-#     solution["totalTime"] = d["total_time"]
-
-#     vehicle_paths = []
-#     for vehicle in solution["vehicles"]:
-#         vehicle_path = {}
-#         vehicle_path["timeOfRoute"] = vehicle["time_of_route"]
-#         vehicle_path["routeLoad"] = vehicle["route_load"]
-#         vehicle_path["costOfRoute"] = vehicle["cost_of_route"]
-#         vehicle_path["vehiclePath"] = vehicle["vehicle_path"]
-
-#     solution["vehicleSchedules"] = None

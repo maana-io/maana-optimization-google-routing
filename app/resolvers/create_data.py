@@ -5,7 +5,6 @@ import json
 
 from copy import deepcopy
 
-# from optimizer import Optimizer
 from app.utils.routing_solver_utils import dummify, add_dummy_entries_for_draft, create_draft_dummy_cargos
 
 
@@ -28,24 +27,6 @@ class Cargo:
         self.dischargeDateFrom = dischargeDateFrom
         self.dischargeDateTo = dischargeDateTo
         self.revenue = revenue
-
-# from current_data_types import Cargo
-
-# from mocked_data_types import Capacity, \
-#     Speed, \
-#     Depth, \
-#     Dimension, \
-#     RouteNode, \
-#     Vehicle, \
-#     Row, \
-#     DistanceMatrix, \
-#     CostOfVehicleRoutesMatrix, \
-#     CostMatrices, \
-#     TimeWindow, \
-#     UnloadWindow, \
-#     LoadWindow, \
-#     RoutePair, \
-#     RequirementToTransport
 
 
 def make_vehicle(volumeCapacity, weightCapacity, speed, draft, immersion_summer):
@@ -145,7 +126,9 @@ def convert_vehicle_data(vehicles):
                     "vehicle_weight_capacities": [],
                     "vessel_speeds": [],
                     "vessel_empty_draft": [],
-                    "immersion_summer": []}
+                    "immersion_summer": [],
+                    "starting_locations": [],
+                    }
 
     for vehicle in vehicles:
         vehicle_data["vehicle_volume_capacities"].append(
@@ -156,8 +139,9 @@ def convert_vehicle_data(vehicles):
         vehicle_data["vessel_empty_draft"].append(
             vehicle["vehicleDimensions"]["depth"]["empty"])
         vehicle_data["immersion_summer"].append(
-            vehicle["vehicleDimensions"]["depth"]["massMultiplier"]
-        )
+            vehicle["vehicleDimensions"]["depth"]["massMultiplier"])
+        vehicle_data["starting_locations"].append(
+            vehicle["startingLocation"]["id"])
 
     return vehicle_data
 
@@ -298,32 +282,26 @@ def create_data_model(vehicles, requirements, costMatrix, distanceMatrix):
 
     original_cargos = convert_cargo(cargos_json)
 
-    # port_to_ind = get_ports_mapping(original_cargos)
     port_to_ind = get_ports_mapping(distance_matrix_json)
     original_cargos = modify_cargo_ports(original_cargos, port_to_ind)
 
     data["total_revenue"] = sum(c.revenue for c in original_cargos)
-    data["distance_matrix"] = add_dummy_entries_for_draft(
-        data["distance_matrix"], 100 * 10000 * 10000)
-
     data["orig_distance_matrix"] = data["distance_matrix"]
 
-    draft_dummy_origin = len(data["distance_matrix"]) - 2
-    draft_dummy_destination = len(data["distance_matrix"]) - 1
+    draft_dummy_origin = 0
+    draft_dummy_destinations = [port_to_ind[x]
+                                for x in data["starting_locations"]]
 
     draft_dummy_cargos = create_draft_dummy_cargos(data["vessel_empty_draft"],
                                                    data["immersion_summer"],
                                                    from_port=draft_dummy_origin,
-                                                   to_port=draft_dummy_destination
+                                                   starting_locations=draft_dummy_destinations
                                                    )
 
-    data["draft_dummy_origin"] = draft_dummy_origin
-    data["draft_dummy_destination"] = draft_dummy_destination
+    temp = dummify(data["distance_matrix"],
+                   draft_dummy_cargos, original_cargos)
 
-    cargos = draft_dummy_cargos + original_cargos
-
-    new_dist, dummy_to_ind, volume_demands, weight_demands, pickups_deliveries, time_windows = dummify(data["distance_matrix"],
-                                                                                                       cargos)
+    new_dist, dummy_to_ind, volume_demands, weight_demands, pickups_deliveries, time_windows = temp
     n = len(data["distance_matrix"])
     draft_dummy_inds_to_zero_out = range(
         n + 1, n + 2 * len(draft_dummy_cargos), 2)
@@ -344,13 +322,9 @@ def create_data_model(vehicles, requirements, costMatrix, distanceMatrix):
     data["weight_demands"] = weight_demands
     data["draft_demands"] = draft_demands
 
-    data["cost_matrixes"] = [add_dummy_entries_for_draft(
-        cost_matrix, 0) for cost_matrix in data["cost_matrixes"]]
-
-    data["cost_matrixes"] = [dummify(m, cargos)[0]
+    data["cost_matrixes"] = [dummify(m, draft_dummy_cargos, original_cargos)[0]
                              for m in data["cost_matrixes"]]
 
-    # data["vessel_speeds"] = [1, 1, 1]
     data["vehicle_starting_time"] = [
         0 for _ in range(len(data["vessel_speeds"]))]
 
@@ -368,29 +342,12 @@ def create_data_model(vehicles, requirements, costMatrix, distanceMatrix):
         if k > 0:
             data["port_max_draft"][k] = data["port_max_draft_orig"][v]
 
-    # data["pickups_deliveries"] = [[1, 2], [3, 4]]
-    # data["pickups_deliveries"] = [[5, 6], [7, 8]]
-    # data["time_windows"] = [{"load_window": (1, 15), "dropoff_window": (2, 18)},
-    # {"load_window": (1, 15), "dropoff_window": (11, 24)}]
-
-    # data["load_and_dropoff_times"] = [{
-    #     "load": 0, "dropoff": 0}, {"load": 0, "dropoff": 0}, {"load" :0, "dropoff": 0}, {"load": 0, "dropoff": 0}
-    #     ]
-
     # Just mocked for now
     data["load_and_dropoff_times"] = [
-        {"load": 0, "dropoff": 0} for _ in range(len(cargos))]
+        {"load": 0, "dropoff": 0} for _ in range(len(original_cargos) + len(draft_dummy_cargos))]
 
     assert(len(data["pickups_deliveries"]) ==
            len(data["load_and_dropoff_times"]))
-
-    # data["vehicle_for_cargo"] = [
-    #     None for _ in range(len(data["pickups_deliveries"]))]
-
-    # data["vehicle_for_cargo"] = [
-    #     None for _ in range(len(data["pickups_deliveries"]))]
-
-    # the first part is needed for draft dummy cargos
 
     data["vehicle_for_cargo"] = list(range(len(vehicles))) + \
         [None for _ in range(len(original_cargos))]
@@ -398,12 +355,7 @@ def create_data_model(vehicles, requirements, costMatrix, distanceMatrix):
     assert(len(data["vehicle_for_cargo"]) == len(data["pickups_deliveries"]))
 
     data['num_vehicles'] = len(data["vessel_speeds"])
-    # data['depot'] = 0
     data["starts"] = [0 for _ in range(len(data["vessel_speeds"]))]
     data["ends"] = [0 for _ in range(len(data["vessel_speeds"]))]
-
-    # data["demands_to_pickup"] = [0, 2, -2, 3, -3]
-    # data["vehicle_volume_capacities"] = [8, 8, 12]
-    # data["vehicle_weight_capacities"] = [8, 8, 12]
 
     return data

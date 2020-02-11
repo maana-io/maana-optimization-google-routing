@@ -3,24 +3,7 @@ from copy import deepcopy
 
 import random as rn
 
-
-class Cargo:
-    def __init__(self, origin=None,
-                 dest=None,
-                 volume=None,
-                 weight=None,
-                 laycanFrom=None,
-                 laycanTo=None,
-                 dischargeDateFrom=None,
-                 dischargeDateTo=None):
-        self.origin = origin
-        self.destination = dest
-        self.volume = volume
-        self.weight = weight
-        self.laycanFrom = laycanFrom
-        self.laycanTo = laycanTo
-        self.dischargeDateFrom = dischargeDateFrom
-        self.dischargeDateTo = dischargeDateTo
+from app.resolvers.optimizer_types import Cargo
 
 
 def buildDistanceMatrix(raw_distances, ports):
@@ -173,6 +156,7 @@ def get_solution(data, manager, routing, assignment):
     total_volume = 0
     total_weight = 0
     total_cost = 0
+    total_profit = 0
     for vehicle_id in range(data['num_vehicles']):
 
         vehicle_path = []
@@ -181,6 +165,7 @@ def get_solution(data, manager, routing, assignment):
         plan_output = 'Route for vehicle {}:\n'.format(vehicle_id)
         route_volume = 0
         route_weight = 0
+        route_revenue = 0
         while not routing.IsEnd(index):
 
             node_index = manager.IndexToNode(index)
@@ -205,6 +190,9 @@ def get_solution(data, manager, routing, assignment):
                     action = "pickup"
                 else:
                     action = "dropoff"
+
+            if cargo_index and action == "dropoff":
+                route_revenue += data["cargo_ind_to_revenue"][cargo_index]
 
             if "draft_demands" in data:
 
@@ -304,18 +292,23 @@ def get_solution(data, manager, routing, assignment):
         plan_output += 'Cost of the route: {}\n'.format(
             assignment.Min(cost_var))
 
+        route_cost = assignment.Min(cost_var)
+        route_profit = route_revenue - route_cost
+
         vehicle_schedule = {
             "id": str(rn.randint(1, 10000000)),
             "vehiclePath": {"id": str(rn.randint(1, 10000000)), "step": vehicle_path},
             "timeOfRoute": assignment.Min(time_var),
             "routeLoad": route_volume,
-            "costOfRoute": assignment.Min(cost_var)
+            "costOfRoute": route_cost,
+            "profitOfRoute": route_profit
         }
 
         print(plan_output)
         total_time += assignment.Min(time_var)
         total_volume += route_volume
         total_cost += assignment.Min(cost_var)
+        total_profit += route_profit
 
         solution["vehicleSchedules"].append(vehicle_schedule)
 
@@ -327,7 +320,7 @@ def get_solution(data, manager, routing, assignment):
     solution["totalTime"] = total_time
     solution["totalVolume"] = total_volume
     solution["totalCost"] = total_cost
-    solution["totalProfit"] = data["total_revenue"] - total_cost
+    solution["totalProfit"] = total_profit
 
     return solution
 

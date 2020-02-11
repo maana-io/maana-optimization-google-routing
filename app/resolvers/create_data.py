@@ -6,27 +6,7 @@ import json
 from copy import deepcopy
 
 from app.utils.routing_solver_utils import dummify, add_dummy_entries_for_draft, create_draft_dummy_cargos
-
-
-class Cargo:
-    def __init__(self, origin=None,
-                 dest=None,
-                 volume=None,
-                 weight=None,
-                 laycanFrom=None,
-                 laycanTo=None,
-                 dischargeDateFrom=None,
-                 dischargeDateTo=None,
-                 revenue=None):
-        self.origin = origin
-        self.destination = dest
-        self.volume = volume
-        self.weight = weight
-        self.laycanFrom = laycanFrom
-        self.laycanTo = laycanTo
-        self.dischargeDateFrom = dischargeDateFrom
-        self.dischargeDateTo = dischargeDateTo
-        self.revenue = revenue
+from app.resolvers.optimizer_types import Cargo
 
 
 def make_vehicle(volumeCapacity, weightCapacity, speed, draft, immersion_summer):
@@ -285,7 +265,7 @@ def create_data_model(vehicles, requirements, costMatrix, distanceMatrix):
     port_to_ind = get_ports_mapping(distance_matrix_json)
     original_cargos = modify_cargo_ports(original_cargos, port_to_ind)
 
-    data["total_revenue"] = sum(c.revenue for c in original_cargos)
+    # data["total_revenue"] = sum(c.revenue for c in original_cargos)
     data["orig_distance_matrix"] = data["distance_matrix"]
 
     draft_dummy_origin = 0
@@ -297,6 +277,8 @@ def create_data_model(vehicles, requirements, costMatrix, distanceMatrix):
                                                    from_port=draft_dummy_origin,
                                                    starting_locations=draft_dummy_destinations
                                                    )
+    data["cargo_ind_to_revenue"] = {
+        ind: c.revenue for ind, c in enumerate(draft_dummy_cargos + original_cargos)}
 
     temp = dummify(data["distance_matrix"],
                    draft_dummy_cargos, original_cargos)

@@ -1,4 +1,3 @@
-
 query{
   routingSolverMakeSchedules(
     vehicles: [{id: "vehicle_1"
@@ -7,7 +6,7 @@ query{
                 weightCapacity: {id: "c", value: 8},
                 vehicleSpeed: {id: "d", value:1},
                 vehicleDimensions: {id: "e", depth: {id: "f", empty: 6, massMultiplier: 1}},               
-                startingLocation: {id: "city_c"}
+                startingLocation: {id: "city_a"}
     
     },
             
@@ -16,7 +15,7 @@ query{
                 volumeCapacity: {id: "b", value: 8},
                 weightCapacity: {id: "c", value: 8},
                 vehicleSpeed: {id: "d", value:1},
-                vehicleDimensions: {id: "e", depth: {id: "f", empty: 6, massMultiplier: 1}},               
+                vehicleDimensions: {id: "e", depth: {id: "f", empty: 0, massMultiplier: 1}},               
                 startingLocation: {id: "city_a"}
   },
       {id: "vehicle_3"
@@ -24,8 +23,8 @@ query{
                 volumeCapacity: {id: "b", value: 12},
                 weightCapacity: {id: "c", value: 12},
                 vehicleSpeed: {id: "d", value:1},
-                vehicleDimensions: {id: "e", depth: {id: "f", empty: 3, massMultiplier: 1}},               
-                startingLocation: {id: "city_c"}
+                vehicleDimensions: {id: "e", depth: {id: "f", empty: 0, massMultiplier: 1}},               
+                startingLocation: {id: "city_a"}
       }
     ],
     requirements: [{id: "cargo-1"

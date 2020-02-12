@@ -298,12 +298,12 @@ def create_data_model(vehicles, requirements, costMatrix, distanceMatrix):
     temp = dummify(data["distance_matrix"],
                    draft_dummy_cargos, original_cargos)
 
-    new_dist, dummy_to_ind, volume_demands, weight_demands, pickups_deliveries, time_windows = temp
+    new_dist, dummy_to_ind, volume_demands, weight_demands, draft_demands, pickups_deliveries, time_windows = temp
     n = len(data["distance_matrix"])
     draft_dummy_inds_to_zero_out = range(
         n + 1, n + 2 * len(draft_dummy_cargos), 2)
 
-    draft_demands = deepcopy(weight_demands)
+    # draft_demands = deepcopy(weight_demands)
 
     for ind in draft_dummy_inds_to_zero_out:
         draft_demands[ind] = 0
@@ -318,6 +318,12 @@ def create_data_model(vehicles, requirements, costMatrix, distanceMatrix):
     data["volume_demands"] = volume_demands
     data["weight_demands"] = weight_demands
     data["draft_demands"] = draft_demands
+
+    print("volume_demands")
+    print(data["volume_demands"])
+
+    print("weight_demands")
+    print(data["weight_demands"])
 
     data["cost_matrixes"] = [dummify(m, draft_dummy_cargos, original_cargos)[0]
                              for m in data["cost_matrixes"]]

@@ -160,12 +160,12 @@ def get_solution(data, manager, routing, assignment):
     not_delivered_cargo_inds = set(data["original_cargo_id_to_ind"].values())
     not_used_vehicle_inds = set(data["vehicle_id_to_ind"].values())
 
-    for vehicle_id in range(data['num_vehicles']):
+    for vehicle_ind in range(data['num_vehicles']):
 
         vehicle_path = []
 
-        index = routing.Start(vehicle_id)
-        plan_output = 'Route for vehicle {}:\n'.format(vehicle_id)
+        index = routing.Start(vehicle_ind)
+        plan_output = 'Route for vehicle {}:\n'.format(vehicle_ind)
         route_volume = 0
         route_weight = 0
         route_revenue = 0
@@ -173,7 +173,7 @@ def get_solution(data, manager, routing, assignment):
 
             node_index = manager.IndexToNode(index)
 
-            print(f"Vehicle id: {vehicle_id}, node_index: {node_index}")
+            print(f"Vehicle id: {vehicle_ind}, node_index: {node_index}")
 
             time_var = time_dimension.CumulVar(index)
             cost_var = cost_dimension.CumulVar(index)
@@ -201,7 +201,7 @@ def get_solution(data, manager, routing, assignment):
                 route_revenue += data["cargo_ind_to_revenue"][cargo_index]
 
             if cargo_index and cargo_index in data["original_cargo_ind_to_id"]:
-                not_used_vehicle_inds.discard(vehicle_id)
+                not_used_vehicle_inds.discard(vehicle_ind)
 
             if "draft_demands" in data:
 
@@ -236,7 +236,7 @@ def get_solution(data, manager, routing, assignment):
                     "cost": assignment.Min(cost_var),
                     "draft": assignment.Min(draft_var),
                     "volume": route_volume,
-                    "requirementIndex": cargo_index,
+                    "requirementId": data["original_cargo_ind_to_id"].get(cargo_index),
                     "action": {"id": "1", "action": {"value": action}},
                 }
 
@@ -249,7 +249,7 @@ def get_solution(data, manager, routing, assignment):
                     "maxTime": assignment.Max(time_var),
                     "cost": assignment.Min(cost_var),
                     "volume": route_volume,
-                    "requirementIndex": cargo_index,
+                    "requirementId": data["original_cargo_ind_to_id"].get(cargo_index),
                     "action": {"id": "1", "action": {"value": action}},
                 }
 
@@ -287,7 +287,7 @@ def get_solution(data, manager, routing, assignment):
             "cost": assignment.Min(cost_var),
             "volume": route_volume,
             "weight": route_weight,
-            "requirementIndex": cargo_index,
+            "requirementId": data["original_cargo_ind_to_id"].get(cargo_index),
             "action": {"id": "1", "action": {"value": action}},
         }
 
@@ -305,7 +305,7 @@ def get_solution(data, manager, routing, assignment):
         route_profit = route_revenue - route_cost
 
         vehicle_schedule = {
-            "id": str(rn.randint(1, 10000000)),
+            "id": data["vehicle_ind_to_id"][vehicle_ind],
             "vehiclePath": {"id": str(rn.randint(1, 10000000)), "step": vehicle_path},
             "timeOfRoute": assignment.Min(time_var),
             "routeLoad": route_volume,
@@ -340,6 +340,8 @@ def get_solution(data, manager, routing, assignment):
     solution["totalVolume"] = total_volume
     solution["totalCost"] = total_cost
     solution["totalProfit"] = total_profit
+    solution["notDeliveredRequirementIds"] = not_delivered_cargo_ids
+    solution["notUsedVehicleIds"] = not_used_vehicle_ids
 
     return solution
 

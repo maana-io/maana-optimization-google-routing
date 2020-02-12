@@ -254,9 +254,9 @@ input AddRoutingSolutionInput {
   totalTime: Int
   totalProfit: Float
   timeWindow: ID
+  notDeliveredRequirementIds: [String]
+  notUsedVehicleIds: [String]
   vehicleSchedules: [ID]
-  
-  
 }
 
 
@@ -280,7 +280,7 @@ input AddStepInput {
   cost: Int
   volume: Int
   weight: Int
-  requirementIndex: Int
+  requirementId: String
   action: ID
 }
 
@@ -2737,8 +2737,9 @@ type RoutingSolution {
   totalTime: Int
   totalProfit: Float
   timeWindow: TimeWindow
+  notDeliveredRequirementIds: [String]
+  notUsedVehicleIds: [String]
   vehicleSchedules: [VehicleSchedule]
-  
 }
 
 type Row {
@@ -2769,7 +2770,7 @@ type Step {
   cost: Int
   volume: Int
   weight: Int
-  requirementIndex: Int
+  requirementId: String
   action: Action
 }
 
@@ -3046,9 +3047,9 @@ input UpdateRoutingSolutionInput {
   totalTime: Int
   totalProfit: Float
   timeWindow: ID
+  notDeliveredRequirementIds: [String]
+  notUsedVehicleIds: [String]
   vehicleSchedules: [ID]
-  
-  
 }
 
 
@@ -3072,7 +3073,7 @@ input UpdateStepInput {
   cost: Int
   volume: Int
   weight: Int
-  requirementIndex: Int
+  requirementId: String
   action: ID
 }
 

@@ -7,7 +7,7 @@ query{
                 weightCapacity: {id: "c", value: 8},
                 vehicleSpeed: {id: "d", value:1},
                 vehicleDimensions: {id: "e", depth: {id: "f", empty: 6, massMultiplier: 1}},               
-                startingLocation: {id: "city_a"}
+                startingLocation: {id: "city_c"}
     
     },
             
@@ -16,7 +16,7 @@ query{
                 volumeCapacity: {id: "b", value: 8},
                 weightCapacity: {id: "c", value: 8},
                 vehicleSpeed: {id: "d", value:1},
-                vehicleDimensions: {id: "e", depth: {id: "f", empty: 0, massMultiplier: 1}},               
+                vehicleDimensions: {id: "e", depth: {id: "f", empty: 6, massMultiplier: 1}},               
                 startingLocation: {id: "city_a"}
   },
       {id: "vehicle_3"
@@ -24,11 +24,11 @@ query{
                 volumeCapacity: {id: "b", value: 12},
                 weightCapacity: {id: "c", value: 12},
                 vehicleSpeed: {id: "d", value:1},
-                vehicleDimensions: {id: "e", depth: {id: "f", empty: 0, massMultiplier: 1}},               
+                vehicleDimensions: {id: "e", depth: {id: "f", empty: 3, massMultiplier: 1}},               
                 startingLocation: {id: "city_c"}
       }
     ],
-    requirements: [{id: "1"
+    requirements: [{id: "cargo-1"
                     routePair: {id: "3",
                                 origin: {id: "city_a::cargo_1", dimension:
                                                    {id: "4", depth: 
@@ -59,7 +59,7 @@ query{
                                 }
                     }
     },
-    {id: "1"
+    {id: "cargo-2"
                     routePair: {id: "3",
                                 origin: {id: "city_a::cargo_2", dimension:
                                                    {id: "4", depth: 
@@ -90,7 +90,7 @@ query{
                                 }
                     }
     },
-    {id: "1"
+    {id: "cargo-3"
                     routePair: {id: "3",
                                 origin: {id: "city_c::cargo_3", dimension:
                                                    {id: "4", depth: 
@@ -121,7 +121,7 @@ query{
                                 }
                     }
     },
-    {id: "1"
+    {id: "cargo-4"
                     routePair: {id: "3",
                                 origin: {id: "city_a::cargo_4", dimension:
                                                    {id: "4", depth: 
@@ -261,6 +261,7 @@ query{
       timeOfRoute
       costOfRoute
       routeLoad
+      profitOfRoute
       vehiclePath {
         id
         step {
@@ -271,7 +272,7 @@ query{
           cost
           volume
           weight
-          requirementIndex
+          requirementId
           action {
             id
             value
@@ -280,5 +281,8 @@ query{
       }
     }
     totalProfit
+    notDeliveredRequirementIds
+    notUsedVehicleIds
+    
   }
 }

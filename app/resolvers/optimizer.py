@@ -358,5 +358,5 @@ class Optimizer:
 
             return {"solution": solution, "d_solution": d_solution}
         else:
-            print("No solution")
+            print("NO SOLUTION FOUND!!!")
             return None

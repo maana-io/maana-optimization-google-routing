@@ -6,27 +6,7 @@ import json
 from copy import deepcopy
 
 from app.utils.routing_solver_utils import dummify, add_dummy_entries_for_draft, create_draft_dummy_cargos
-
-
-class Cargo:
-    def __init__(self, origin=None,
-                 dest=None,
-                 volume=None,
-                 weight=None,
-                 laycanFrom=None,
-                 laycanTo=None,
-                 dischargeDateFrom=None,
-                 dischargeDateTo=None,
-                 revenue=None):
-        self.origin = origin
-        self.destination = dest
-        self.volume = volume
-        self.weight = weight
-        self.laycanFrom = laycanFrom
-        self.laycanTo = laycanTo
-        self.dischargeDateFrom = dischargeDateFrom
-        self.dischargeDateTo = dischargeDateTo
-        self.revenue = revenue
+from app.resolvers.optimizer_types import Cargo
 
 
 def make_vehicle(volumeCapacity, weightCapacity, speed, draft, immersion_summer):
@@ -130,7 +110,9 @@ def convert_vehicle_data(vehicles):
                     "starting_locations": [],
                     }
 
-    for vehicle in vehicles:
+    vehicle_ind_to_id = {}
+
+    for ind, vehicle in enumerate(vehicles):
         vehicle_data["vehicle_volume_capacities"].append(
             vehicle["volumeCapacity"]["value"])
         vehicle_data["vehicle_weight_capacities"].append(
@@ -142,6 +124,12 @@ def convert_vehicle_data(vehicles):
             vehicle["vehicleDimensions"]["depth"]["massMultiplier"])
         vehicle_data["starting_locations"].append(
             vehicle["startingLocation"]["id"])
+
+        vehicle_ind_to_id[ind] = vehicle["id"]
+
+    vehicle_data["vehicle_ind_to_id"] = vehicle_ind_to_id
+    vehicle_data["vehicle_id_to_ind"] = {
+        v: k for k, v in vehicle_data["vehicle_ind_to_id"].items()}
 
     return vehicle_data
 
@@ -201,6 +189,7 @@ def convert_cargo(input_cargos):
     for input_cargo in input_cargos:
         cargo = Cargo()
 
+        cargo.id = input_cargo["id"]
         cargo.volume = input_cargo["volume"]
         cargo.weight = input_cargo["weight"]
         cargo.origin = input_cargo["routePair"]["origin"]["id"]
@@ -285,7 +274,7 @@ def create_data_model(vehicles, requirements, costMatrix, distanceMatrix):
     port_to_ind = get_ports_mapping(distance_matrix_json)
     original_cargos = modify_cargo_ports(original_cargos, port_to_ind)
 
-    data["total_revenue"] = sum(c.revenue for c in original_cargos)
+    # data["total_revenue"] = sum(c.revenue for c in original_cargos)
     data["orig_distance_matrix"] = data["distance_matrix"]
 
     draft_dummy_origin = 0
@@ -297,6 +286,14 @@ def create_data_model(vehicles, requirements, costMatrix, distanceMatrix):
                                                    from_port=draft_dummy_origin,
                                                    starting_locations=draft_dummy_destinations
                                                    )
+    data["cargo_ind_to_revenue"] = {
+        ind: c.revenue for ind, c in enumerate(draft_dummy_cargos + original_cargos)}
+
+    data["original_cargo_id_to_ind"] = {c.id:
+                                        len(draft_dummy_cargos) + i for i, c in enumerate(original_cargos)}
+
+    data["original_cargo_ind_to_id"] = {
+        v: k for k, v in data["original_cargo_id_to_ind"].items()}
 
     temp = dummify(data["distance_matrix"],
                    draft_dummy_cargos, original_cargos)

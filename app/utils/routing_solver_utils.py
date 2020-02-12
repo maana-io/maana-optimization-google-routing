@@ -3,24 +3,7 @@ from copy import deepcopy
 
 import random as rn
 
-
-class Cargo:
-    def __init__(self, origin=None,
-                 dest=None,
-                 volume=None,
-                 weight=None,
-                 laycanFrom=None,
-                 laycanTo=None,
-                 dischargeDateFrom=None,
-                 dischargeDateTo=None):
-        self.origin = origin
-        self.destination = dest
-        self.volume = volume
-        self.weight = weight
-        self.laycanFrom = laycanFrom
-        self.laycanTo = laycanTo
-        self.dischargeDateFrom = dischargeDateFrom
-        self.dischargeDateTo = dischargeDateTo
+from app.resolvers.optimizer_types import Cargo
 
 
 def buildDistanceMatrix(raw_distances, ports):
@@ -173,19 +156,24 @@ def get_solution(data, manager, routing, assignment):
     total_volume = 0
     total_weight = 0
     total_cost = 0
-    for vehicle_id in range(data['num_vehicles']):
+    total_profit = 0
+    not_delivered_cargo_inds = set(data["original_cargo_id_to_ind"].values())
+    not_used_vehicle_inds = set(data["vehicle_id_to_ind"].values())
+
+    for vehicle_ind in range(data['num_vehicles']):
 
         vehicle_path = []
 
-        index = routing.Start(vehicle_id)
-        plan_output = 'Route for vehicle {}:\n'.format(vehicle_id)
+        index = routing.Start(vehicle_ind)
+        plan_output = 'Route for vehicle {}:\n'.format(vehicle_ind)
         route_volume = 0
         route_weight = 0
+        route_revenue = 0
         while not routing.IsEnd(index):
 
             node_index = manager.IndexToNode(index)
 
-            print(f"Vehicle id: {vehicle_id}, node_index: {node_index}")
+            print(f"Vehicle id: {vehicle_ind}, node_index: {node_index}")
 
             time_var = time_dimension.CumulVar(index)
             cost_var = cost_dimension.CumulVar(index)
@@ -201,10 +189,19 @@ def get_solution(data, manager, routing, assignment):
             if node_index >= len(data["orig_distance_matrix"]):
                 cargo_index = (
                     node_index - len(data["orig_distance_matrix"])) // 2
+
+                not_delivered_cargo_inds.discard(cargo_index)
+
                 if (node_index - len(data["orig_distance_matrix"])) % 2 == 0:
                     action = "pickup"
                 else:
                     action = "dropoff"
+
+            if cargo_index and action == "dropoff":
+                route_revenue += data["cargo_ind_to_revenue"][cargo_index]
+
+            if cargo_index and cargo_index in data["original_cargo_ind_to_id"]:
+                not_used_vehicle_inds.discard(vehicle_ind)
 
             if "draft_demands" in data:
 
@@ -239,7 +236,7 @@ def get_solution(data, manager, routing, assignment):
                     "cost": assignment.Min(cost_var),
                     "draft": assignment.Min(draft_var),
                     "volume": route_volume,
-                    "requirementIndex": cargo_index,
+                    "requirementId": data["original_cargo_ind_to_id"].get(cargo_index),
                     "action": {"id": "1", "action": {"value": action}},
                 }
 
@@ -252,7 +249,7 @@ def get_solution(data, manager, routing, assignment):
                     "maxTime": assignment.Max(time_var),
                     "cost": assignment.Min(cost_var),
                     "volume": route_volume,
-                    "requirementIndex": cargo_index,
+                    "requirementId": data["original_cargo_ind_to_id"].get(cargo_index),
                     "action": {"id": "1", "action": {"value": action}},
                 }
 
@@ -290,7 +287,7 @@ def get_solution(data, manager, routing, assignment):
             "cost": assignment.Min(cost_var),
             "volume": route_volume,
             "weight": route_weight,
-            "requirementIndex": cargo_index,
+            "requirementId": data["original_cargo_ind_to_id"].get(cargo_index),
             "action": {"id": "1", "action": {"value": action}},
         }
 
@@ -304,18 +301,23 @@ def get_solution(data, manager, routing, assignment):
         plan_output += 'Cost of the route: {}\n'.format(
             assignment.Min(cost_var))
 
+        route_cost = assignment.Min(cost_var)
+        route_profit = route_revenue - route_cost
+
         vehicle_schedule = {
-            "id": str(rn.randint(1, 10000000)),
+            "id": data["vehicle_ind_to_id"][vehicle_ind],
             "vehiclePath": {"id": str(rn.randint(1, 10000000)), "step": vehicle_path},
             "timeOfRoute": assignment.Min(time_var),
             "routeLoad": route_volume,
-            "costOfRoute": assignment.Min(cost_var)
+            "costOfRoute": route_cost,
+            "profitOfRoute": route_profit
         }
 
         print(plan_output)
         total_time += assignment.Min(time_var)
         total_volume += route_volume
         total_cost += assignment.Min(cost_var)
+        total_profit += route_profit
 
         solution["vehicleSchedules"].append(vehicle_schedule)
 
@@ -323,11 +325,23 @@ def get_solution(data, manager, routing, assignment):
     print('Total Volume of all routes: {}'.format(total_volume))
     print('Total cost of all routes: {}'.format(total_cost))
 
+    not_delivered_cargo_ids = [
+        data["original_cargo_ind_to_id"][ind] for ind in not_delivered_cargo_inds]
+
+    print('Not delivered cargo ids: {}'.format(not_delivered_cargo_ids))
+
+    not_used_vehicle_ids = [data["vehicle_ind_to_id"][ind]
+                            for ind in not_used_vehicle_inds]
+
+    print("Not used vehicle ids: {}".format(not_used_vehicle_ids))
+
     solution["id"] = str(rn.randint(1, 10000000))
     solution["totalTime"] = total_time
     solution["totalVolume"] = total_volume
     solution["totalCost"] = total_cost
-    solution["totalProfit"] = data["total_revenue"] - total_cost
+    solution["totalProfit"] = total_profit
+    solution["notDeliveredRequirementIds"] = not_delivered_cargo_ids
+    solution["notUsedVehicleIds"] = not_used_vehicle_ids
 
     return solution
 

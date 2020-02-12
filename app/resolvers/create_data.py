@@ -181,6 +181,7 @@ def convert_cargo(input_cargos):
     for input_cargo in input_cargos:
         cargo = Cargo()
 
+        cargo.id = input_cargo["id"]
         cargo.volume = input_cargo["volume"]
         cargo.weight = input_cargo["weight"]
         cargo.origin = input_cargo["routePair"]["origin"]["id"]
@@ -279,6 +280,12 @@ def create_data_model(vehicles, requirements, costMatrix, distanceMatrix):
                                                    )
     data["cargo_ind_to_revenue"] = {
         ind: c.revenue for ind, c in enumerate(draft_dummy_cargos + original_cargos)}
+
+    data["original_cargo_id_to_ind"] = {c.id:
+                                        len(draft_dummy_cargos) + i for i, c in enumerate(original_cargos)}
+
+    data["original_cargo_ind_to_id"] = {
+        v: k for k, v in data["original_cargo_id_to_ind"].items()}
 
     temp = dummify(data["distance_matrix"],
                    draft_dummy_cargos, original_cargos)

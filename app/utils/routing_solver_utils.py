@@ -157,6 +157,7 @@ def get_solution(data, manager, routing, assignment):
     total_weight = 0
     total_cost = 0
     total_profit = 0
+    not_delivered_cargo_inds = set(data["original_cargo_id_to_ind"].values())
     for vehicle_id in range(data['num_vehicles']):
 
         vehicle_path = []
@@ -186,6 +187,9 @@ def get_solution(data, manager, routing, assignment):
             if node_index >= len(data["orig_distance_matrix"]):
                 cargo_index = (
                     node_index - len(data["orig_distance_matrix"])) // 2
+
+                not_delivered_cargo_inds.discard(cargo_index)
+
                 if (node_index - len(data["orig_distance_matrix"])) % 2 == 0:
                     action = "pickup"
                 else:
@@ -315,6 +319,11 @@ def get_solution(data, manager, routing, assignment):
     print('Total time of all routes: {}min'.format(total_time))
     print('Total Volume of all routes: {}'.format(total_volume))
     print('Total cost of all routes: {}'.format(total_cost))
+
+    not_delivered_cargo_ids = [
+        data["original_cargo_ind_to_id"][ind] for ind in not_delivered_cargo_inds]
+
+    print('Not delivered cargo ids: {}'.format(not_delivered_cargo_ids))
 
     solution["id"] = str(rn.randint(1, 10000000))
     solution["totalTime"] = total_time

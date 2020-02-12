@@ -1,6 +1,8 @@
 
 class Cargo:
-    def __init__(self, origin=None,
+    def __init__(self,
+                 id=id,
+                 origin=None,
                  dest=None,
                  volume=None,
                  weight=None,
@@ -9,6 +11,7 @@ class Cargo:
                  dischargeDateFrom=None,
                  dischargeDateTo=None,
                  revenue=0):
+        self.id = id
         self.origin = origin
         self.destination = dest
         self.volume = volume

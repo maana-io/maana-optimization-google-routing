@@ -274,6 +274,12 @@ def create_data_model(vehicles, requirements, costMatrix, distanceMatrix):
     port_to_ind = get_ports_mapping(distance_matrix_json)
     original_cargos = modify_cargo_ports(original_cargos, port_to_ind)
 
+    print(f"port_to_ind: {port_to_ind}")
+
+    ind_to_port = {v: k for k, v in port_to_ind.items()}
+    data["port_to_ind"] = port_to_ind
+    data["ind_to_port"] = ind_to_port
+
     # data["total_revenue"] = sum(c.revenue for c in original_cargos)
     data["orig_distance_matrix"] = data["distance_matrix"]
 
@@ -304,6 +310,8 @@ def create_data_model(vehicles, requirements, costMatrix, distanceMatrix):
         n + 1, n + 2 * len(draft_dummy_cargos), 2)
 
     # draft_demands = deepcopy(weight_demands)
+
+    print(f"dummy_to_ind: {dummy_to_ind}")
 
     for ind in draft_dummy_inds_to_zero_out:
         draft_demands[ind] = 0

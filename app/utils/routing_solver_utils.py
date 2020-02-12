@@ -103,26 +103,27 @@ def dummify(matrix, draft_dummy_cargos, original_cargos):
     return matrix, dummy_to_ind, volume_demands, weight_demands, draft_demands, pickup_deliveries, time_windows
 
 
-def dedummify(schedule, dummy_to_ind):
+def dedummify(schedule, dummy_to_ind, ind_to_port):
 
     new_schedule = deepcopy(schedule)
 
     for vehicle_id, vehicle in enumerate(new_schedule["vehicleSchedules"]):
         new_schedule["vehicleSchedules"][vehicle_id]["vehiclePath"]["step"] = dedummify_vehicle_path(
-            vehicle["vehiclePath"]["step"], dummy_to_ind)
+            vehicle["vehiclePath"]["step"], dummy_to_ind, ind_to_port)
 
     return new_schedule
 
 
-def dedummify_vehicle_path(vehicle_path, dummy_to_ind):
+def dedummify_vehicle_path(vehicle_path, dummy_to_ind, ind_to_port):
 
     d_vehicle_path = []
 
     for path in vehicle_path:
 
         orig_node = dummy_to_ind[path["routeNodeId"]]
+        port = ind_to_port.get(orig_node, "None")
         new_path = deepcopy(path)
-        new_path["routeNodeId"] = orig_node
+        new_path["routeNodeId"] = port
         d_vehicle_path.append(new_path)
 
     return d_vehicle_path

@@ -110,7 +110,9 @@ def convert_vehicle_data(vehicles):
                     "starting_locations": [],
                     }
 
-    for vehicle in vehicles:
+    vehicle_ind_to_id = {}
+
+    for ind, vehicle in enumerate(vehicles):
         vehicle_data["vehicle_volume_capacities"].append(
             vehicle["volumeCapacity"]["value"])
         vehicle_data["vehicle_weight_capacities"].append(
@@ -122,6 +124,12 @@ def convert_vehicle_data(vehicles):
             vehicle["vehicleDimensions"]["depth"]["massMultiplier"])
         vehicle_data["starting_locations"].append(
             vehicle["startingLocation"]["id"])
+
+        vehicle_ind_to_id[ind] = vehicle["id"]
+
+    vehicle_data["vehicle_ind_to_id"] = vehicle_ind_to_id
+    vehicle_data["vehicle_id_to_ind"] = {
+        v: k for k, v in vehicle_data["vehicle_ind_to_id"].items()}
 
     return vehicle_data
 

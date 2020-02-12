@@ -158,6 +158,8 @@ def get_solution(data, manager, routing, assignment):
     total_cost = 0
     total_profit = 0
     not_delivered_cargo_inds = set(data["original_cargo_id_to_ind"].values())
+    not_used_vehicle_inds = set(data["vehicle_id_to_ind"].values())
+
     for vehicle_id in range(data['num_vehicles']):
 
         vehicle_path = []
@@ -197,6 +199,9 @@ def get_solution(data, manager, routing, assignment):
 
             if cargo_index and action == "dropoff":
                 route_revenue += data["cargo_ind_to_revenue"][cargo_index]
+
+            if cargo_index and cargo_index in data["original_cargo_ind_to_id"]:
+                not_used_vehicle_inds.discard(vehicle_id)
 
             if "draft_demands" in data:
 
@@ -324,6 +329,11 @@ def get_solution(data, manager, routing, assignment):
         data["original_cargo_ind_to_id"][ind] for ind in not_delivered_cargo_inds]
 
     print('Not delivered cargo ids: {}'.format(not_delivered_cargo_ids))
+
+    not_used_vehicle_ids = [data["vehicle_ind_to_id"][ind]
+                            for ind in not_used_vehicle_inds]
+
+    print("Not used vehicle ids: {}".format(not_used_vehicle_ids))
 
     solution["id"] = str(rn.randint(1, 10000000))
     solution["totalTime"] = total_time

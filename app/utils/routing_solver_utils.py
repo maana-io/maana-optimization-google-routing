@@ -54,6 +54,8 @@ def dummify(matrix, draft_dummy_cargos, original_cargos):
     dummy_to_ind = {x: x for x in range(len(matrix))}
     volume_demands = {x: 0 for x in range(len(matrix))}
     weight_demands = {x: 0 for x in range(len(matrix))}
+    draft_demands = {x: 0 for x in range(len(matrix))}
+
     pickup_deliveries = []
     time_windows = []
 
@@ -64,12 +66,14 @@ def dummify(matrix, draft_dummy_cargos, original_cargos):
 
         matrix, new_ind_origin = add_dummy_entry(matrix, cargo.origin)
         dummy_to_ind[new_ind_origin] = cargo.origin
-        volume_demands[new_ind_origin] = cargo.volume
-        weight_demands[new_ind_origin] = cargo.weight
+        volume_demands[new_ind_origin] = 0
+        weight_demands[new_ind_origin] = 0
+        draft_demands[new_ind_origin] = cargo.weight
         matrix, new_ind_dest = add_dummy_entry(matrix, cargo.destination)
         dummy_to_ind[new_ind_dest] = cargo.destination
         volume_demands[new_ind_dest] = 0
         weight_demands[new_ind_dest] = 0
+        draft_demands[new_ind_dest] = 0
 
         pickup_deliveries.append((new_ind_origin, new_ind_dest))
         time_windows.append(
@@ -81,10 +85,12 @@ def dummify(matrix, draft_dummy_cargos, original_cargos):
         dummy_to_ind[new_ind_origin] = cargo.origin
         volume_demands[new_ind_origin] = cargo.volume
         weight_demands[new_ind_origin] = cargo.weight
+        draft_demands[new_ind_origin] = cargo.weight
         matrix, new_ind_dest = add_dummy_entry(matrix, cargo.destination)
         dummy_to_ind[new_ind_dest] = cargo.destination
         volume_demands[new_ind_dest] = -cargo.volume
         weight_demands[new_ind_dest] = -cargo.weight
+        draft_demands[new_ind_dest] = -cargo.weight
 
         pickup_deliveries.append((new_ind_origin, new_ind_dest))
         time_windows.append(
@@ -94,29 +100,30 @@ def dummify(matrix, draft_dummy_cargos, original_cargos):
     # matrix, new_ind_origin = add_dummy_entry(matrix, 0)
     # matrix, new_ind_origin = add_dummy_entry(matrix, 0)
 
-    return matrix, dummy_to_ind, volume_demands, weight_demands, pickup_deliveries, time_windows
+    return matrix, dummy_to_ind, volume_demands, weight_demands, draft_demands, pickup_deliveries, time_windows
 
 
-def dedummify(schedule, dummy_to_ind):
+def dedummify(schedule, dummy_to_ind, ind_to_port):
 
     new_schedule = deepcopy(schedule)
 
     for vehicle_id, vehicle in enumerate(new_schedule["vehicleSchedules"]):
         new_schedule["vehicleSchedules"][vehicle_id]["vehiclePath"]["step"] = dedummify_vehicle_path(
-            vehicle["vehiclePath"]["step"], dummy_to_ind)
+            vehicle["vehiclePath"]["step"], dummy_to_ind, ind_to_port)
 
     return new_schedule
 
 
-def dedummify_vehicle_path(vehicle_path, dummy_to_ind):
+def dedummify_vehicle_path(vehicle_path, dummy_to_ind, ind_to_port):
 
     d_vehicle_path = []
 
     for path in vehicle_path:
 
         orig_node = dummy_to_ind[path["routeNodeId"]]
+        port = ind_to_port.get(orig_node, "None")
         new_path = deepcopy(path)
-        new_path["routeNodeId"] = orig_node
+        new_path["routeNodeId"] = port
         d_vehicle_path.append(new_path)
 
     return d_vehicle_path
@@ -236,6 +243,7 @@ def get_solution(data, manager, routing, assignment):
                     "cost": assignment.Min(cost_var),
                     "draft": assignment.Min(draft_var),
                     "volume": route_volume,
+                    "weight": route_weight,
                     "requirementId": data["original_cargo_ind_to_id"].get(cargo_index),
                     "action": {"id": "1", "action": {"value": action}},
                 }
@@ -249,9 +257,13 @@ def get_solution(data, manager, routing, assignment):
                     "maxTime": assignment.Max(time_var),
                     "cost": assignment.Min(cost_var),
                     "volume": route_volume,
+                    "weight": route_weight,
                     "requirementId": data["original_cargo_ind_to_id"].get(cargo_index),
                     "action": {"id": "1", "action": {"value": action}},
                 }
+
+            print("step")
+            print(step)
 
             vehicle_path.append(step)
 

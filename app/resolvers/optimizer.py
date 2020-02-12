@@ -354,7 +354,8 @@ class Optimizer:
 
         if assignment:
             solution = get_solution(data, manager, routing, assignment)
-            d_solution = dedummify(solution, data["dummy_to_ind"])
+            d_solution = dedummify(
+                solution, data["dummy_to_ind"], data["ind_to_port"])
 
             return {"solution": solution, "d_solution": d_solution}
         else:

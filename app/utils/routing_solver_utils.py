@@ -121,10 +121,11 @@ def dedummify_vehicle_path(vehicle_path, dummy_to_ind, ind_to_port):
     for path in vehicle_path:
 
         orig_node = dummy_to_ind[path["routeNodeId"]]
-        port = ind_to_port.get(orig_node, "None")
+        port = ind_to_port.get(orig_node, None)
         new_path = deepcopy(path)
         new_path["routeNodeId"] = port
-        d_vehicle_path.append(new_path)
+        if new_path["routeNodeId"] and new_path["requirementId"]:
+            d_vehicle_path.append(new_path)
 
     return d_vehicle_path
 

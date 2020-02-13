@@ -257,6 +257,7 @@ query{
     totalCost
     totalTime
     vehicleSchedules {
+      id
       timeOfRoute
       costOfRoute
       routeLoad

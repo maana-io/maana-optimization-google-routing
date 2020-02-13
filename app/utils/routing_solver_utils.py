@@ -193,7 +193,9 @@ def get_solution(data, manager, routing, assignment):
 
             cargo_index = None
             action = None
-            if node_index >= len(data["orig_distance_matrix"]):
+
+            if node_index >= len(data["orig_distance_matrix"]) + data["num_vehicles"] * 2:
+                # if node_index >= min(data["original_cargo_id_to_ind"].values()):
                 cargo_index = (
                     node_index - len(data["orig_distance_matrix"])) // 2
 
@@ -245,7 +247,7 @@ def get_solution(data, manager, routing, assignment):
                     "volume": route_volume,
                     "weight": route_weight,
                     "requirementId": data["original_cargo_ind_to_id"].get(cargo_index),
-                    "action": {"id": "1", "action": {"value": action}},
+                    "action": {"id": "1", "value": action},
                 }
 
             else:
@@ -259,7 +261,7 @@ def get_solution(data, manager, routing, assignment):
                     "volume": route_volume,
                     "weight": route_weight,
                     "requirementId": data["original_cargo_ind_to_id"].get(cargo_index),
-                    "action": {"id": "1", "action": {"value": action}},
+                    "action": {"id": "1", "value": action},
                 }
 
             print("step")
@@ -291,19 +293,24 @@ def get_solution(data, manager, routing, assignment):
                 assignment.Min(cost_var),
             )
 
-        step = {
-            "id": str(rn.randint(1, 10000000)),
-            "routeNodeId": manager.IndexToNode(index),
-            "minTime": assignment.Min(time_var),
-            "maxTime": assignment.Max(time_var),
-            "cost": assignment.Min(cost_var),
-            "volume": route_volume,
-            "weight": route_weight,
-            "requirementId": data["original_cargo_ind_to_id"].get(cargo_index),
-            "action": {"id": "1", "action": {"value": action}},
-        }
+        # This is the last step:
 
-        vehicle_path.append(step)
+        # The last step just returns to the 0 node,
+        # I don' think we need it
+
+        # step = {
+        #     "id": str(rn.randint(1, 10000000)),
+        #     "routeNodeId": manager.IndexToNode(index),
+        #     "minTime": assignment.Min(time_var),
+        #     "maxTime": assignment.Max(time_var),
+        #     "cost": assignment.Min(cost_var),
+        #     "volume": route_volume,
+        #     "weight": route_weight,
+        #     "requirementId": data["original_cargo_ind_to_id"].get(cargo_index),
+        #     "action": {"id": "1", "value": action},
+        # }
+
+        # vehicle_path.append(step)
 
         plan_output += 'Time of the route: {}\n'.format(
             assignment.Min(time_var),

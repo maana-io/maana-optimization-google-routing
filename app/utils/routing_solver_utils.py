@@ -193,7 +193,9 @@ def get_solution(data, manager, routing, assignment):
 
             cargo_index = None
             action = None
-            if node_index >= len(data["orig_distance_matrix"]):
+
+            if node_index >= len(data["orig_distance_matrix"]) + data["num_vehicles"] * 2:
+                # if node_index >= min(data["original_cargo_id_to_ind"].values()):
                 cargo_index = (
                     node_index - len(data["orig_distance_matrix"])) // 2
 

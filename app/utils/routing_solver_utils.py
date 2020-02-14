@@ -114,6 +114,53 @@ def dedummify(schedule, dummy_to_ind, ind_to_port):
     return new_schedule
 
 
+def add_wait_and_travel(steps):
+
+    new_steps = []
+
+    prev = None
+
+    for step in steps[::-1]:
+
+        if not prev:
+            new_steps.append(step)
+        elif step["routeNodeId"] == prev["routeNodeId"]:
+            new_step = deepcopy(step)
+            new_step["requirementId"] = None
+            new_step["action"] = {"id": "1", "value": "wait"}
+            new_steps.append(new_step)
+            new_steps.append(step)
+        elif step["routeNodeId"] != prev["routeNodeId"]:
+            new_step = deepcopy(step)
+            new_step["requirementId"] = None
+            new_step["routeNodeId"] = None
+            new_step["action"] = {"id": "1", "value": "travel"}
+            new_steps.append(new_step)
+            new_steps.append(step)
+
+        prev = step
+
+    if steps and step["minTime"] > 0:
+        new_step = {
+            "id": "step",
+            "routeNodeId": step["routeNodeId"],
+            "minTime": 0,
+            "maxTime": 0,
+            "cost": 0,
+            "volume": 0,
+            "weight": 0,
+            "requirementId": None,
+            "action": {
+                "id": "1",
+                "value": "wait"
+            }
+        }
+
+        new_steps.append(new_step)
+
+    return new_steps[::-1]
+
+
 def dedummify_vehicle_path(vehicle_path, dummy_to_ind, ind_to_port):
 
     d_vehicle_path = []
@@ -127,7 +174,7 @@ def dedummify_vehicle_path(vehicle_path, dummy_to_ind, ind_to_port):
         if new_path["routeNodeId"] and new_path["requirementId"]:
             d_vehicle_path.append(new_path)
 
-    return d_vehicle_path
+    return add_wait_and_travel(d_vehicle_path)
 
 
 def add_dummy_entries_for_draft(matrix, cost):

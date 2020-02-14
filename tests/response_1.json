@@ -1,0 +1,135 @@
+{
+    "data": {
+        "routingSolverMakeSchedules": {
+            "id": "solution",
+            "totalVolume": 0,
+            "totalCost": 10,
+            "totalTime": 24,
+            "vehicleSchedules": [{
+                    "id": "vehicle_1",
+                    "timeOfRoute": 18,
+                    "costOfRoute": 5,
+                    "routeLoad": 0,
+                    "profitOfRoute": 195,
+                    "vehiclePath": {
+                        "id": "vehicle-path",
+                        "step": [{
+                                "id": "step",
+                                "routeNodeId": "city_a",
+                                "minTime": 1,
+                                "maxTime": 3,
+                                "cost": 0,
+                                "volume": 2,
+                                "weight": 2,
+                                "requirementId": "cargo-2",
+                                "action": {
+                                    "id": "1",
+                                    "value": "pickup"
+                                }
+                            },
+                            {
+                                "id": "step",
+                                "routeNodeId": "city_a",
+                                "minTime": 9,
+                                "maxTime": 11,
+                                "cost": 0,
+                                "volume": 4,
+                                "weight": 4,
+                                "requirementId": "cargo-4",
+                                "action": {
+                                    "id": "1",
+                                    "value": "pickup"
+                                }
+                            },
+                            {
+                                "id": "step",
+                                "routeNodeId": "city_d",
+                                "minTime": 14,
+                                "maxTime": 17,
+                                "cost": 5,
+                                "volume": 2,
+                                "weight": 2,
+                                "requirementId": "cargo-2",
+                                "action": {
+                                    "id": "1",
+                                    "value": "dropoff"
+                                }
+                            },
+                            {
+                                "id": "step",
+                                "routeNodeId": "city_d",
+                                "minTime": 18,
+                                "maxTime": 18,
+                                "cost": 5,
+                                "volume": 0,
+                                "weight": 0,
+                                "requirementId": "cargo-4",
+                                "action": {
+                                    "id": "1",
+                                    "value": "dropoff"
+                                }
+                            }
+                        ]
+                    }
+                },
+                {
+                    "id": "vehicle_2",
+                    "timeOfRoute": 6,
+                    "costOfRoute": 5,
+                    "routeLoad": 0,
+                    "profitOfRoute": 95,
+                    "vehiclePath": {
+                        "id": "vehicle-path",
+                        "step": [{
+                                "id": "step",
+                                "routeNodeId": "city_a",
+                                "minTime": 1,
+                                "maxTime": 1,
+                                "cost": 0,
+                                "volume": 2,
+                                "weight": 2,
+                                "requirementId": "cargo-1",
+                                "action": {
+                                    "id": "1",
+                                    "value": "pickup"
+                                }
+                            },
+                            {
+                                "id": "step",
+                                "routeNodeId": "city_b",
+                                "minTime": 6,
+                                "maxTime": 6,
+                                "cost": 5,
+                                "volume": 0,
+                                "weight": 0,
+                                "requirementId": "cargo-1",
+                                "action": {
+                                    "id": "1",
+                                    "value": "dropoff"
+                                }
+                            }
+                        ]
+                    }
+                },
+                {
+                    "id": "vehicle_3",
+                    "timeOfRoute": 0,
+                    "costOfRoute": 0,
+                    "routeLoad": 0,
+                    "profitOfRoute": 0,
+                    "vehiclePath": {
+                        "id": "vehicle-path",
+                        "step": []
+                    }
+                }
+            ],
+            "totalProfit": 290,
+            "notDeliveredRequirementIds": [
+                "cargo-3"
+            ],
+            "notUsedVehicleIds": [
+                "vehicle_3"
+            ]
+        }
+    }
+}

@@ -239,7 +239,7 @@ def get_solution(data, manager, routing, assignment):
             if "draft_demands" in data:
 
                 step = {
-                    "id": str(rn.randint(1, 10000000)),
+                    "id": "step",
                     "routeNodeId": manager.IndexToNode(index),
                     "minTime": assignment.Min(time_var),
                     "maxTime": assignment.Max(time_var),
@@ -254,7 +254,7 @@ def get_solution(data, manager, routing, assignment):
             else:
 
                 step = {
-                    "id": str(rn.randint(1, 10000000)),
+                    "id": "step",
                     "routeNodeId": manager.IndexToNode(index),
                     "minTime": assignment.Min(time_var),
                     "maxTime": assignment.Max(time_var),
@@ -326,7 +326,7 @@ def get_solution(data, manager, routing, assignment):
 
         vehicle_schedule = {
             "id": data["vehicle_ind_to_id"][vehicle_ind],
-            "vehiclePath": {"id": str(rn.randint(1, 10000000)), "step": vehicle_path},
+            "vehiclePath": {"id": "vehicle-path", "step": vehicle_path},
             "timeOfRoute": assignment.Min(time_var),
             "routeLoad": route_volume,
             "costOfRoute": route_cost,
@@ -355,7 +355,7 @@ def get_solution(data, manager, routing, assignment):
 
     print("Not used vehicle ids: {}".format(not_used_vehicle_ids))
 
-    solution["id"] = str(rn.randint(1, 10000000))
+    solution["id"] = "solution"
     solution["totalTime"] = total_time
     solution["totalVolume"] = total_volume
     solution["totalCost"] = total_cost

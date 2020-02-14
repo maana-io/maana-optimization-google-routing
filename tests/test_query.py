@@ -16,5 +16,3 @@ def test_query():
         expected_response_content = json.load(f)
 
     assert(response_content == expected_response_content)
-
-    # assert(data["data"]["routingSolverMakeSchedules"]["totalProfit"] == 383.0)

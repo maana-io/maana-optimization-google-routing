@@ -102,11 +102,7 @@ def resolve_routing_solver(*_, vehicles, requirements, costMatrix, distanceMatri
 
     raw_solution = optimizer.optimize(data, manager, routing)
 
-    print("all solution")
-    print(f"raw_solution: {raw_solution}")
-    print("dedummyfied solution")
     temp = raw_solution["d_solution"]
-    print(f"dedummyfied solution: {temp}")
 
     return raw_solution["d_solution"]
 

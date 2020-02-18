@@ -344,6 +344,8 @@ def create_data_model(vehicles, requirements, costMatrix, distanceMatrix):
 
     data["port_to_allowed_vehicles"] = []  # [{"port": 3, "vehicles": [1]}]
 
+    data["port_to_allowed_vehicles"] = [{"port": 13, "vehicles": [2]}]
+
     draft_data = add_port_draft(cargos_json, port_to_ind)
     data.update(draft_data)
 

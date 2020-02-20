@@ -137,7 +137,7 @@ def add_wait_and_travel(steps, starting_location):
             new_step["requirementId"] = None
             new_step["routeNodeId"] = None
             # need to do a more thorough check for corner cases
-            if step["action"]["value"] == "dropoff":  # remember, we are going backwards
+            if step["volume"] == 0:  # remember, we are going backwards
 
                 new_step["action"] = {"id": "1", "value": "reposition"}
             else:

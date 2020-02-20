@@ -269,7 +269,7 @@ def add_port_to_allowed_vehicles(cargos_json, port_to_ind, ind_to_dummys, vehicl
         if "candiateVehicles" not in cargo:
             continue
 
-        vehicle_ids = [v["id"] for v in cargo["candiateVehicles"]]
+        vehicle_ids = cargo["candiateVehicles"]
         vehicle_inds = [vehicle_id_to_ind[id] for id in vehicle_ids]
         origin_port_id = cargo["routePair"]["origin"]["id"].split("::")[0]
 

@@ -433,6 +433,7 @@ def get_solution(data, manager, routing, assignment):
     solution["totalProfit"] = total_profit
     solution["notDeliveredRequirementIds"] = not_delivered_cargo_ids
     solution["notUsedVehicleIds"] = not_used_vehicle_ids
+    solution["timeWindow"] = data["timeWindow"]
 
     return solution
 

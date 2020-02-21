@@ -190,7 +190,7 @@ class Optimizer:
 
         routing.AddDimensionWithVehicleTransits(
             transit_callback_indexes,
-            10,
+            500,
             10000,
             False,
             time_for_vehicles)

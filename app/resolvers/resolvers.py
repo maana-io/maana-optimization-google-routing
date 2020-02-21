@@ -84,10 +84,10 @@ def resolve_pickups_and_deliveries_mapper(query):
     query.set_field("solverMakeSchedules", resolve_pickups_and_deliveries)
 
 
-def resolve_routing_solver(*_, vehicles, requirements, costMatrix, distanceMatrix, objective):
+def resolve_routing_solver(*_, vehicles, requirements, costMatrix, distanceMatrix, objective, routingTimeWindow):
 
     data = create_data_model(vehicles, requirements,
-                             costMatrix, distanceMatrix)
+                             costMatrix, distanceMatrix, routingTimeWindow)
 
     manager = pywrapcp.RoutingIndexManager(
         len(data['distance_matrix']

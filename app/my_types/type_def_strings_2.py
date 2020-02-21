@@ -1487,7 +1487,8 @@ type Query {
         requirements: [RequirementToTransportAsInput], 
         costMatrix: CostMatricesAsInput,
         distanceMatrix: DistanceMatrixAsInput,
-        objective: ObjectiveAsInput
+        objective: ObjectiveAsInput,
+        routingTimeWindow: RoutingTimeWindowAsInput
         ): RoutingSolution
   
   allRealLinearConstraints(
@@ -2615,7 +2616,7 @@ type Query {
   queryJSON(input: KindQueryInput!): String
   solveLinearCPProblem(vars: [IntVarAsInput], constraints: [IntegerLinearConstraintAsInput], objective: IntegerLinearObjectiveAsInput): CPSolution
   mipCBCSolver: String
-  routingSolver(vehicles: [VehicleAsInput], requirements: [RequirementToTransportAsInput], costMatrix: CostMatricesAsInput, distanceMatrix: DistanceMatrixAsInput, objective: ObjectiveAsInput): RoutingSolution
+  routingSolver(vehicles: [VehicleAsInput], requirements: [RequirementToTransportAsInput], costMatrix: CostMatricesAsInput, distanceMatrix: DistanceMatrixAsInput, objective: ObjectiveAsInput, routingTimeWindow: RoutingTimeWindowAsInput): RoutingSolution
   solveRealLinearProblem(vars: [RealLinearVarAsInput!]!, constraints: [RealLinearConstraintAsInput!]!, objective: RealLinearObjectiveAsInput!): RealLinearSolution!
   solverAssignmentWithSizes(costs: CostMatricesAsInput, constraints: [AssignmentConstraintAsInput], objective: AssignmentObjectiveAsInput): AssignmentSolution
   CKGErrors: [String]
@@ -2786,6 +2787,16 @@ input TimeWindowAsInput {
   id: ID!
   start: Int
   end: Int
+}
+
+type RoutingTimeWindow {
+  id: ID!
+  timeWindow: TimeWindow
+}
+
+input RoutingTimeWindowAsInput {
+  id: ID!
+  timeWindow: TimeWindowAsInput
 }
 
 type UnLoadWindow {

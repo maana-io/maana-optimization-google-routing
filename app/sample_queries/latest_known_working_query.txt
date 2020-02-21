@@ -56,7 +56,13 @@ query{
                                      start: 2,
                                      end: 8
                                 }
-                    }
+                    },
+                    candiateVehicles: [
+                      "vehicle_1",
+                      "vehicle_2"
+                    ]
+                    
+                    
     },
     {id: "cargo-2"
                     routePair: {id: "3",
@@ -87,7 +93,10 @@ query{
                                      start: 2,
                                      end: 17
                                 }
-                    }
+                    },
+                    candiateVehicles: [
+                      "vehicle_3"
+                    ]
     },
     {id: "cargo-3"
                     routePair: {id: "3",
@@ -118,7 +127,12 @@ query{
                                      start: 11,
                                      end: 20
                                 }
-                    }
+                    },
+                    candiateVehicles: [
+                      "vehicle_1",
+                      "vehicle_2",
+                      "vehicle_3"
+                    ]
     },
     {id: "cargo-4"
                     routePair: {id: "3",
@@ -149,7 +163,8 @@ query{
                                      start: 18,
                                      end: 25
                                 }
-                    }
+                    },
+
     }  
     ],
     costMatrix: {id: "11",
@@ -250,6 +265,15 @@ query{
       },
       timeLimit: 10,
       solutionLimit: 200
+    },
+     routingTimeWindow: {
+      id: "2",
+      timeWindow: {
+        id: "1"
+        start: 1,
+        end: 30
+      }
+      
     }
   ) {
     id

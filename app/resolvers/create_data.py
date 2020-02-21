@@ -251,7 +251,6 @@ def add_port_draft(cargos_json, port_to_ind):
     return draft_data
 
 
-<<<<<<< HEAD
 def make_ind_to_dummys(dummy_to_ind):
     ind_to_dummys = defaultdict(list)
     for dummy, ind in dummy_to_ind.items():
@@ -295,10 +294,7 @@ def add_port_to_allowed_vehicles(cargos_json,
     return port_to_allowed_vehicles
 
 
-def create_data_model(vehicles, requirements, costMatrix, distanceMatrix):
-=======
 def create_data_model(vehicles, requirements, costMatrix, distanceMatrix, routingTimeWindow):
->>>>>>> 1789c219a311d8f2cb19b67ddd24a39d98b5dcec
     """Stores the data for the problem."""
 
     vehicles_json = vehicles

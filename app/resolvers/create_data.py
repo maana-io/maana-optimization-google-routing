@@ -250,7 +250,7 @@ def add_port_draft(cargos_json, port_to_ind):
     return draft_data
 
 
-def create_data_model(vehicles, requirements, costMatrix, distanceMatrix):
+def create_data_model(vehicles, requirements, costMatrix, distanceMatrix, routingTimeWindow):
     """Stores the data for the problem."""
 
     vehicles_json = vehicles
@@ -368,5 +368,7 @@ def create_data_model(vehicles, requirements, costMatrix, distanceMatrix):
     data['num_vehicles'] = len(data["vessel_speeds"])
     data["starts"] = [0 for _ in range(len(data["vessel_speeds"]))]
     data["ends"] = [0 for _ in range(len(data["vessel_speeds"]))]
+
+    data["timeWindow"] = routingTimeWindow["timeWindow"]
 
     return data

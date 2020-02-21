@@ -1,3 +1,4 @@
+
 query{
   routingSolverMakeSchedules(
     vehicles: [{id: "vehicle_1"
@@ -265,15 +266,6 @@ query{
       },
       timeLimit: 10,
       solutionLimit: 200
-    },
-     routingTimeWindow: {
-      id: "2",
-      timeWindow: {
-        id: "1"
-        start: 1,
-        end: 30
-      }
-      
     }
   ) {
     id

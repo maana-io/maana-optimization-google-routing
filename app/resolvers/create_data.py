@@ -2,6 +2,7 @@ from ortools.constraint_solver import routing_enums_pb2
 from ortools.constraint_solver import pywrapcp
 import numpy as np
 import json
+from collections import defaultdict
 
 from copy import deepcopy
 
@@ -250,6 +251,49 @@ def add_port_draft(cargos_json, port_to_ind):
     return draft_data
 
 
+def make_ind_to_dummys(dummy_to_ind):
+    ind_to_dummys = defaultdict(list)
+    for dummy, ind in dummy_to_ind.items():
+        ind_to_dummys[ind].append(dummy)
+    return ind_to_dummys
+
+
+def add_port_to_allowed_vehicles(cargos_json,
+                                 vehicle_id_to_ind,
+                                 cargo_node_ind_start
+                                 ):
+
+    port_to_allowed_vehicles = []
+    cargo_to_port_inds = {}
+
+    cargo_inds = [(x, x+1)
+                  for x in range(cargo_node_ind_start,
+                                 cargo_node_ind_start+len(cargos_json) * 2,
+                                 2)]
+
+    for cargo, origin_dest in zip(cargos_json, cargo_inds):
+        origin_port_ind, destination_port_ind = origin_dest
+
+        if "candiateVehicles" not in cargo:
+
+            port_to_allowed_vehicles.append(
+                {"port": origin_port_ind, "vehicles": []})
+            port_to_allowed_vehicles.append(
+                {"port": destination_port_ind, "vehicles": []}
+            )
+
+        else:
+            vehicle_ids = cargo["candiateVehicles"]
+            vehicle_inds = [vehicle_id_to_ind[id] for id in vehicle_ids]
+            port_to_allowed_vehicles.append(
+                {"port": origin_port_ind, "vehicles": vehicle_inds})
+            port_to_allowed_vehicles.append(
+                {"port": destination_port_ind, "vehicles": vehicle_inds}
+            )
+
+    return port_to_allowed_vehicles
+
+
 def create_data_model(vehicles, requirements, costMatrix, distanceMatrix, routingTimeWindow):
     """Stores the data for the problem."""
 
@@ -270,6 +314,8 @@ def create_data_model(vehicles, requirements, costMatrix, distanceMatrix, routin
     data.update(cost_matrices_data)
 
     original_cargos = convert_cargo(cargos_json)
+
+    print(f"original_cargos: {original_cargos}")
 
     port_to_ind = get_ports_mapping(distance_matrix_json)
     original_cargos = modify_cargo_ports(original_cargos, port_to_ind)
@@ -301,6 +347,9 @@ def create_data_model(vehicles, requirements, costMatrix, distanceMatrix, routin
     data["original_cargo_ind_to_id"] = {
         v: k for k, v in data["original_cargo_id_to_ind"].items()}
 
+    print(f"original_cargo_ind_to_id:")
+    print(data["original_cargo_ind_to_id"])
+
     temp = dummify(data["distance_matrix"],
                    draft_dummy_cargos, original_cargos)
 
@@ -308,6 +357,8 @@ def create_data_model(vehicles, requirements, costMatrix, distanceMatrix, routin
     n = len(data["distance_matrix"])
     draft_dummy_inds_to_zero_out = range(
         n + 1, n + 2 * len(draft_dummy_cargos), 2)
+
+    ind_to_dummys = make_ind_to_dummys(dummy_to_ind)
 
     # draft_demands = deepcopy(weight_demands)
 
@@ -342,7 +393,18 @@ def create_data_model(vehicles, requirements, costMatrix, distanceMatrix, routin
     data["time_matrices"] = [np.array(data["distance_matrix"]) /
                              speed for speed in data["vessel_speeds"]]
 
-    data["port_to_allowed_vehicles"] = []  # [{"port": 3, "vehicles": [1]}]
+    # data["port_to_allowed_vehicles"] = []  # [{"port": 3, "vehicles": [1]}]
+
+    cargo_node_ind_start = len(port_to_ind) + len(draft_dummy_cargos) * 2 + 1
+
+    data["port_to_allowed_vehicles"] = add_port_to_allowed_vehicles(
+        cargos_json,
+        data["vehicle_id_to_ind"],
+        cargo_node_ind_start
+    )
+
+    print("port_to_allowed_vehicles")
+    print(data["port_to_allowed_vehicles"])
 
     draft_data = add_port_draft(cargos_json, port_to_ind)
     data.update(draft_data)

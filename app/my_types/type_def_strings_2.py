@@ -2689,7 +2689,7 @@ type RequirementToTransport {
   loadWindow: LoadWindow
   unloadWindow: UnLoadWindow
   revenue: Float
-  candiateVehicles: [Vehicle]
+  candiateVehicles: [String]
 }
 
 input RequirementToTransportAsInput {
@@ -2700,7 +2700,7 @@ input RequirementToTransportAsInput {
   loadWindow: LoadWindowAsInput
   unloadWindow: UnLoadWindowAsInput
   revenue: Float
-  candiateVehicles: [VehicleAsInput]
+  candiateVehicles: [String]
 }
 
 type RouteNode {

@@ -258,30 +258,38 @@ def make_ind_to_dummys(dummy_to_ind):
     return ind_to_dummys
 
 
-def add_port_to_allowed_vehicles(cargos_json, port_to_ind, ind_to_dummys, vehicle_id_to_ind):
-
-    # data["port_to_allowed_vehicles"] = [{"port": 13, "vehicles": [2]}]
+def add_port_to_allowed_vehicles(cargos_json,
+                                 vehicle_id_to_ind,
+                                 cargo_node_ind_start
+                                 ):
 
     port_to_allowed_vehicles = []
+    cargo_to_port_inds = {}
 
-    for cargo in cargos_json:
+    cargo_inds = [(x, x+1)
+                  for x in range(cargo_node_ind_start,
+                                 cargo_node_ind_start+len(cargos_json) * 2,
+                                 2)]
+
+    for cargo, origin_dest in zip(cargos_json, cargo_inds):
+        origin_port_ind, destination_port_ind = origin_dest
 
         if "candiateVehicles" not in cargo:
-            continue
 
-        vehicle_ids = cargo["candiateVehicles"]
-        vehicle_inds = [vehicle_id_to_ind[id] for id in vehicle_ids]
-        origin_port_id = cargo["routePair"]["origin"]["id"].split("::")[0]
-
-        for ind in ind_to_dummys[port_to_ind[origin_port_id]]:
             port_to_allowed_vehicles.append(
-                {"port": ind, "vehicles": vehicle_inds})
-
-        destination_port_id = cargo["routePair"]["origin"]["id"].split("::")[0]
-
-        for ind in ind_to_dummys[port_to_ind[destination_port_id]]:
+                {"port": origin_port_ind, "vehicles": []})
             port_to_allowed_vehicles.append(
-                {"port": ind, "vehicles": vehicle_inds})
+                {"port": destination_port_ind, "vehicles": []}
+            )
+
+        else:
+            vehicle_ids = cargo["candiateVehicles"]
+            vehicle_inds = [vehicle_id_to_ind[id] for id in vehicle_ids]
+            port_to_allowed_vehicles.append(
+                {"port": origin_port_ind, "vehicles": vehicle_inds})
+            port_to_allowed_vehicles.append(
+                {"port": destination_port_ind, "vehicles": vehicle_inds}
+            )
 
     return port_to_allowed_vehicles
 
@@ -387,11 +395,13 @@ def create_data_model(vehicles, requirements, costMatrix, distanceMatrix):
 
     # data["port_to_allowed_vehicles"] = []  # [{"port": 3, "vehicles": [1]}]
 
-    data["port_to_allowed_vehicles"] = [
-        {"port": 13, "vehicles": [0]}, {"port": 11, "vehicles": [0]}, {"port": 17, "vehicles": [0]}]
+    cargo_node_ind_start = len(port_to_ind) + len(draft_dummy_cargos) * 2 + 1
 
-    # data["port_to_allowed_vehicles"] = add_port_to_allowed_vehicles(
-    #     cargos_json, port_to_ind, ind_to_dummys, data["vehicle_id_to_ind"])
+    data["port_to_allowed_vehicles"] = add_port_to_allowed_vehicles(
+        cargos_json,
+        data["vehicle_id_to_ind"],
+        cargo_node_ind_start
+    )
 
     print("port_to_allowed_vehicles")
     print(data["port_to_allowed_vehicles"])

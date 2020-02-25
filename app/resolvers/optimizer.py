@@ -101,15 +101,7 @@ class Optimizer:
 
                 # cargo_capacity = dwt - NON_CARGO_WEIGHT
                 # cargo_capacity_unused = cargo_capacity - cargo_on_board
-                centimeter_change_in_draft = cargo / immersion_summer
-
-                # This does not work because call back is called many times
-                # if vehicle_ind not in self.vessel_draft_set:
-                #     centimeter_change_in_draft += data["vessel_empty_draft"][vehicle_ind]
-                #     self.vessel_draft_set[vehicle_ind] = True
-
-                # print(
-                # f"vehicle_ind: {vehicle_ind}: change in draft: {centimeter_change_in_draft}")
+                centimeter_change_in_draft = cargo / immersion_summer * 0.01
 
                 return centimeter_change_in_draft
             return draft_callback
@@ -120,7 +112,7 @@ class Optimizer:
                 to_node = manager.IndexToNode(to_index)
                 cargo = data["draft_demands"][to_node]
                 immersion_summer = data["immersion_summer"][vehicle_ind]
-                centimeter_change_in_draft = cargo / immersion_summer
+                centimeter_change_in_draft = cargo / immersion_summer * 0.01
 
                 return centimeter_change_in_draft
             return draft_callback

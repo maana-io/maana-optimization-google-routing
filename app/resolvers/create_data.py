@@ -100,6 +100,15 @@ def make_cargo(origin,
     return requirement_to_transport
 
 
+def calc_empty_draft(vehicle):
+    md = vehicle["vehicleDimensions"]["depth"]["max"]
+    mw = vehicle["weightCapacity"]["value"]
+    s = vehicle["vehicleDimensions"]["depth"]["massMultiplier"]
+
+    empty_draft = md - (mw / s) * 0.01
+    return empty_draft
+
+
 def convert_vehicle_data(vehicles):
 
     vehicle_data = {"vehicle_volume_capacities": [],
@@ -118,8 +127,9 @@ def convert_vehicle_data(vehicles):
         vehicle_data["vehicle_weight_capacities"].append(
             vehicle["weightCapacity"]["value"])
         vehicle_data["vessel_speeds"].append(vehicle["vehicleSpeed"]["value"])
+        empty_draft = calc_empty_draft(vehicle)
         vehicle_data["vessel_empty_draft"].append(
-            vehicle["vehicleDimensions"]["depth"]["empty"])
+            empty_draft)
         vehicle_data["immersion_summer"].append(
             vehicle["vehicleDimensions"]["depth"]["massMultiplier"])
         vehicle_data["starting_locations"].append(

@@ -230,7 +230,7 @@ def add_port_draft(cargos_json, port_to_ind):
     print("ind_to_draft")
     print(ind_to_draft)
 
-    large_number = 1000
+    large_number = 1000 * 1000 * 1000
 
     port_to_max_draft_orig = {0: large_number}
 

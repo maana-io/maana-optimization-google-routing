@@ -200,7 +200,7 @@ class Optimizer:
         routing.AddDimensionWithVehicleTransits(
             transit_callback_cost_indexes,
             0,
-            10000,
+            1000 * 1000 * 1000,
             False,
             cost_for_vehicles
         )
@@ -213,7 +213,7 @@ class Optimizer:
             routing.AddDimensionWithVehicleTransits(
                 transit_callback_draft_indexes,
                 0,
-                1000,  # sets max draft any vessel can have
+                1000 * 1000,  # sets max draft any vessel can have
                 True,
                 draft_for_vehicles
             )
@@ -223,7 +223,7 @@ class Optimizer:
             routing.AddDimensionWithVehicleTransits(
                 transit_callback_draft_2_indexes,
                 0,
-                1000,  # sets max draft any vessel can have
+                1000 * 1000,  # sets max draft any vessel can have
                 True,
                 draft_for_vehicles_2
             )

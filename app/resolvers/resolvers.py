@@ -86,6 +86,12 @@ def resolve_pickups_and_deliveries_mapper(query):
 
 def resolve_routing_solver(*_, vehicles, requirements, costMatrix, distanceMatrix, objective, routingTimeWindow):
 
+    print(f"vehicles: {vehicles}")
+    print(f"requirements: {requirements}")
+    print(f"costMatrix: {costMatrix}")
+    print(f"distanceMatrix: {distanceMatrix}")
+    print(f"objective: {objective}")
+
     data = create_data_model(vehicles, requirements,
                              costMatrix, distanceMatrix, routingTimeWindow)
 

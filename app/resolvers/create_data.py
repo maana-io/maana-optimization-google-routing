@@ -156,10 +156,16 @@ def convert_distance_matrix(input_distances):
     for row in input_distances["rows"]:
         distance_rows.append([0] + row["values"])
 
-    distance_rows = np.array(distance_rows, dtype=np.int)
-    # np.fill_diagonal(distance_rows, 0)
+    print(distance_rows)
 
-    data["distance_matrix"] = distance_rows
+    distance_rows = np.array(distance_rows, dtype=np.int)
+    np.fill_diagonal(distance_rows, 0)
+
+    # need to convert back to list otherwise strange issues with callback
+    data["distance_matrix"] = distance_rows.tolist()
+
+    print("distance_matrix")
+    print(data["distance_matrix"])
 
     return data
 
@@ -182,7 +188,11 @@ def convert_cost_matrix(input_cost_of_vehicle_routes_matrix):
     for row in input_cost_of_vehicle_routes_matrix["rows"]:
         cost_matrix.append([0] + row["values"])
 
-    return cost_matrix
+    cost_matrix = np.array(cost_matrix, dtype=np.int)
+    np.fill_diagonal(cost_matrix, 0)
+
+    # need to convert back to list, otherwise strange issues with callback
+    return cost_matrix.tolist()
 
 
 def convert_cost_matrices(input_cost_matrices):

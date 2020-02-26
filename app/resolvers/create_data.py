@@ -148,13 +148,18 @@ def convert_distance_matrix(input_distances):
 
     data = {}
 
-    data["distance_matrix"] = []
+    distance_rows = []
 
-    data["distance_matrix"].append(
+    distance_rows.append(
         [0 for _ in range(len(input_distances["rows"]) + 1)])
 
     for row in input_distances["rows"]:
-        data["distance_matrix"].append([0] + row["values"])
+        distance_rows.append([0] + row["values"])
+
+    distance_rows = np.array(distance_rows, dtype=np.int)
+    # np.fill_diagonal(distance_rows, 0)
+
+    data["distance_matrix"] = distance_rows
 
     return data
 

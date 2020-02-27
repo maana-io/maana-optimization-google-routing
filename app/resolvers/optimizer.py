@@ -28,6 +28,15 @@ class Optimizer:
         elif first_solution_strategy.lower() == "path_cheapest_arc":
             print("using path cheapest arc as first solution strategy")
             self.first_solution_strategy = routing_enums_pb2.FirstSolutionStrategy.PATH_CHEAPEST_ARC
+        elif first_solution_strategy.lower() == "global_cheapest_arc":
+            print("using global cheapest arc as first solution strategy")
+            self.first_solution_strategy = routing_enums_pb2.FirstSolutionStrategy.GLOBAL_CHEAPEST_ARC
+        elif first_solution_strategy.lower() == "sweep":
+            print("using sweep as first solution strategy")
+            self.first_solution_strategy = routing_enums_pb2.FirstSolutionStrategy.SWEEP
+        elif first_solution_strategy.lower() == "christofides":
+            print("using christofides as first solution strategy")
+            self.first_solution_strategy = routing_enums_pb2.FirstSolutionStrategy.CHRISTOFIDES
         else:
             print(
                 f"{first_solution_strategy} is not a valid first solution strategy, defaulting to AUTOMATIC")

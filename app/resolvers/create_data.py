@@ -3,6 +3,8 @@ from ortools.constraint_solver import pywrapcp
 import numpy as np
 import json
 
+import logging
+
 from copy import deepcopy
 
 from app.utils.routing_solver_utils import dummify, add_dummy_entries_for_draft, create_draft_dummy_cargos
@@ -15,6 +17,11 @@ def calc_empty_draft(vehicle):
     s = vehicle["vehicleDimensions"]["depth"]["massMultiplier"]
 
     empty_draft = md - (mw / s) * 0.01
+
+    if empty_draft < 0:
+        logging.warn(f"empty_draft of {empty_draft} detected, setting to 0")
+        return 0
+
     return empty_draft
 
 
@@ -37,6 +44,7 @@ def convert_vehicle_data(vehicles):
             vehicle["weightCapacity"]["value"])
         vehicle_data["vessel_speeds"].append(vehicle["vehicleSpeed"]["value"])
         empty_draft = calc_empty_draft(vehicle)
+        logging.info(f"vehicle ind: {ind}, empty_draft: {empty_draft}")
         vehicle_data["vessel_empty_draft"].append(
             empty_draft)
         vehicle_data["immersion_summer"].append(
@@ -65,16 +73,15 @@ def convert_distance_matrix(input_distances):
     for row in input_distances["rows"]:
         distance_rows.append([0] + row["values"])
 
-    print(distance_rows)
-
     distance_rows = np.array(distance_rows, dtype=np.int)
     np.fill_diagonal(distance_rows, 0)
+
+    logging.info(distance_rows)
 
     # need to convert back to list otherwise strange issues with callback
     data["distance_matrix"] = distance_rows.tolist()
 
-    print("distance_matrix")
-    print(data["distance_matrix"])
+    logging.info("distance_matrix: {}".format(data["distance_matrix"]))
 
     return data
 
@@ -151,18 +158,29 @@ def add_port_draft(cargos_json, port_to_ind):
 
     port_draft_max = {}
 
+    print("cargos_json")
+    print(cargos_json)
+
     port_to_max_draft = {}
     for cargo in cargos_json:
-        port_to_max_draft[cargo["routePair"]["origin"]["id"].split("::")[0]
-                          ] = cargos_json[0]["routePair"]["origin"]["dimension"]["depth"]["max"]
-        port_to_max_draft[cargo["routePair"]["destination"]["id"].split("::")[0]
-                          ] = cargos_json[0]["routePair"]["destination"]["dimension"]["depth"]["max"]
+        origin_port_id = cargo["routePair"]["origin"]["id"].split("::")[0]
+        origin_port_max_depth = cargo["routePair"]["origin"]["dimension"]["depth"]["max"]
+        logging.info(
+            f"origin_port_id: {origin_port_id}, origin_port_max_depth: {origin_port_max_depth}")
+        port_to_max_draft[origin_port_id] = origin_port_max_depth
+        destination_port_id = cargo["routePair"]["destination"]["id"].split("::")[
+            0]
+        destination_port_max_depth = cargo["routePair"]["destination"]["dimension"]["depth"]["max"]
+        logging.info(
+            f"destination_port_id: {destination_port_id}, destination_port_max_depth: {destination_port_max_depth}")
+        port_to_max_draft[destination_port_id] = destination_port_max_depth
+
+    logging.info(f"port_to_max_draft: {port_to_max_draft}")
 
     ind_to_draft = {
         port_to_ind[port_id]: draft for port_id, draft in port_to_max_draft.items()}
 
-    print("ind_to_draft")
-    print(ind_to_draft)
+    logging.info("ind_to_draft: {}".format(ind_to_draft))
 
     large_number = 1000 * 1000 * 1000
 
@@ -174,8 +192,7 @@ def add_port_draft(cargos_json, port_to_ind):
     port_to_max_draft_orig[len(ind_to_draft) +
                            2] = large_number  # For draft dummy
 
-    print("port_to_max_draft_orig")
-    print(port_to_max_draft_orig)
+    logging.info("port_to_max_draft_orig: {}".format(port_to_max_draft_orig))
 
     draft_data = {}
 
@@ -245,12 +262,12 @@ def create_data_model(vehicles, requirements, costMatrix, distanceMatrix, routin
 
     # draft_demands = deepcopy(weight_demands)
 
-    print(f"dummy_to_ind: {dummy_to_ind}")
+    logging.info(f"dummy_to_ind: {dummy_to_ind}")
 
     for ind in draft_dummy_inds_to_zero_out:
         draft_demands[ind] = 0
 
-    print("Distance Matrix size: {}".format(len(new_dist)))
+    logging.info("Distance Matrix size: {}".format(len(new_dist)))
 
     data["dummy_to_ind"] = dummy_to_ind
     data["pickups_deliveries"] = pickups_deliveries
@@ -261,11 +278,11 @@ def create_data_model(vehicles, requirements, costMatrix, distanceMatrix, routin
     data["weight_demands"] = weight_demands
     data["draft_demands"] = draft_demands
 
-    print("volume_demands")
-    print(data["volume_demands"])
+    logging.info("volume_demands")
+    logging.info(data["volume_demands"])
 
-    print("weight_demands")
-    print(data["weight_demands"])
+    logging.info("weight_demands")
+    logging.info(data["weight_demands"])
 
     data["cost_matrixes"] = [dummify(m, draft_dummy_cargos, original_cargos)[0]
                              for m in data["cost_matrixes"]]

@@ -210,6 +210,58 @@ class Vehicle:
         return random_step
 
 
+def make_vehicles(vehicle_json, distance_matrix, cost_matrix, port_to_ind, start_time=0):
+    vehicles = []
+    for v_js in vehicles_json:
+        vehicle = Vehicle()
+
+        vehicle.id = v_js["id"]
+        vehicle.speed = v_js["vehicleSpeed"]["value"]
+        vehicle.weight_capacity = v_js["weightCapacity"]["value"]
+        vehicle.volume_capacity = v_js["volumeCapacity"]["value"]
+        vehicle.current_weight = 0
+        vehicle.current_volume = 0
+        md = v_js["vehicleDimensions"]["depth"]["max"]
+        mw = weight_capacity
+        s = v_js["vehicleDimensions"]["depth"]["massMultiplier"]
+        vehicle.current_draft = md - (mw / s)
+        vehicle.current_location = v_js["startingLocation"]["id"]
+        vehicle.current_time = 0
+        vehicle.distance_matrix = distance_matrix
+        vehicle.cost_matrix = cost_matrix
+        vehicle.port_to_ind = port_to_ind
+
+        vehicles.append(vehicle)
+
+    return vehicles
+
+
+def make_port_to_ind(distance_matrix_json):
+
+    port_to_ind = {}
+    for ind, row in enumerate(distance_matrix_json["rows"]):
+        port_to_ind[row["id"]] = ind
+
+    return port_to_ind
+
+
+def make_distance_matrix(distance_matrix_json):
+    distance_matrix = []
+    for row in distance_matrix_json:
+        distance_matrix.append(row["values"])
+    return distance_matrix
+
+
+def make_cost_matrices(cost_matrices_json):
+    cost_matrices = []
+    for cost_matrix_json in cost_matrices_json:
+        cost_matrix = []
+        for row in cost_matrix_json:
+            cost_matrix.append(row)
+        cost_matrices.append(cost_matrix)
+    return cost_matrices
+
+
 if __name__ == "__main__":
 
     distance_matrix = [[0, 5, 6, 8],

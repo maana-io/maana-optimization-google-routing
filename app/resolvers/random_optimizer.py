@@ -185,6 +185,8 @@ if __name__ == "__main__":
 
     port_to_ind = {"port_a": 0, "port_b": 1, "port_c": 2, "port_d": 3}
 
+    vehicles = []
+
     vehicle = Vehicle(id=1,
                       speed=1,
                       weight_capacity=10,
@@ -200,6 +202,26 @@ if __name__ == "__main__":
                       port_to_ind=port_to_ind,
                       immersion_summer=None,
                       )
+
+    vehicles.append(vehicle)
+
+    vehicle_2 = Vehicle(id=2,
+                        speed=1,
+                        weight_capacity=15,
+                        volume_capacity=None,
+                        draft_capacity=None,
+                        current_weight=0,
+                        current_volume=None,
+                        current_draft=None,
+                        distance_matrix=distance_matrix,
+                        cost_matrix=None,
+                        current_location="port_a",
+                        current_time=0,
+                        port_to_ind=port_to_ind,
+                        immersion_summer=None,
+                        )
+
+    vehicles.append(vehicle_2)
 
     cargos = []
 
@@ -229,8 +251,32 @@ if __name__ == "__main__":
                     )
     cargos.append(cargo_2)
 
-    vehicles = []
-    vehicles.append(vehicle)
+    cargo_3 = Cargo(id="cargo_3",
+                    origin="port_b",
+                    dest="port_c",
+                    volume=2,
+                    weight=13,
+                    laycanFrom=3,
+                    laycanTo=5,
+                    dischargeDateFrom=35,
+                    dischargeDateTo=38,
+                    revenue=7.5
+                    )
+    cargos.append(cargo_3)
+
+    cargo_4 = Cargo(id="cargo_4",
+                    origin="port_d",
+                    dest="port_c",
+                    volume=2,
+                    weight=13,
+                    laycanFrom=3,
+                    laycanTo=5,
+                    dischargeDateFrom=35,
+                    dischargeDateTo=38,
+                    revenue=7.5
+                    )
+
+    cargos.append(cargo_4)
 
     simulation = Simulation(vehicles, cargos, n_iterations=5)
     result = simulation.solve()

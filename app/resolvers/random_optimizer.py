@@ -16,7 +16,9 @@ class Cargo:
                  laycanTo=None,
                  dischargeDateFrom=None,
                  dischargeDateTo=None,
-                 revenue=0):
+                 revenue=0,
+                 #  allowed_vehicles=[]
+                 ):
         self.id = id
         self.origin = origin
         self.destination = dest
@@ -27,12 +29,15 @@ class Cargo:
         self.dischargeDateFrom = dischargeDateFrom
         self.dischargeDateTo = dischargeDateTo
         self.revenue = revenue
+        # self.allowed_vehicles = allowed_vehicles
 
 
 class Simulation:
-    def __init__(self, vehicles, cargos, n_iterations):
+    def __init__(self, vehicles, cargos, port_to_max_draft, port_to_ind, n_iterations):
         self.vehicles = vehicles
         self.cargos = cargos
+        self.port_to_max_draft = port_to_max_draft
+        self.port_to_ind = port_to_ind
         self.n_iterations = n_iterations
         self.cargo_id_to_cargo = {c.id: c for c in self.cargos}
         self.vehicle_id_to_vehicle = {v.id: v for v in self.vehicles}
@@ -50,7 +55,7 @@ class Simulation:
             vehicle = vehicle_id_to_vehicle_copy[vehicle_id]
 
             possible_steps = vehicle.calc_possible_steps(
-                self.cargos, cargos_taken)
+                self.cargos, cargos_taken, self.port_to_max_draft)
             if not possible_steps:
                 active_vehicle_ids.remove(vehicle_id)
                 continue
@@ -66,15 +71,22 @@ class Simulation:
     def score_run(self, all_runs):
         scored_runs = []
         for vehicle_to_steps in all_runs:
-            score = 0
-            for steps in vehicle_to_steps.values():
+            n_deliveries = 0
+            for vehicle_id, steps in vehicle_to_steps.items():
                 for step in steps:
-                    if step[1] == "dropoff":
-                        score += 1
-            scored_runs.append((vehicle_to_steps, score))
+                    cargo_id, action, travel_time = step
+                    if action == "dropoff":
+                        n_deliveries += 1
+                        cargo = self.cargo_id_to_cargo[cargo_id]
+                        vehicle = self.vehicle_id_to_vehicle[vehicle_id]
+                        cost = vehicle.cost_matrix[self.port_to_ind[cargo.origin]
+                                                   ][self.port_to_ind[cargo.destination]]
+                        profit = cargo.revenue - cost
+
+            scored_runs.append((vehicle_to_steps, n_deliveries, cost, profit))
 
         sorted_scored_runs = sorted(
-            scored_runs, key=lambda x: x[1], reverse=True)
+            scored_runs, key=lambda x: (x[1], x[3]), reverse=True)
 
         return sorted_scored_runs
 
@@ -139,19 +151,41 @@ class Vehicle:
             return False
         return True
 
-    def calc_possible_steps(self, cargos, cargos_taken):
+    def volume_check_ok(self, cargo_volume):
+        if self.current_volume + cargo_volume > self.volume_capacity:
+            return False
+        return True
+
+    def draft_origin_check_ok(self, cargo_weight, max_draft):
+        if self.current_draft + cargo_weight / self.immersion_summer > max_draft:
+            return False
+        return True
+
+    def calc_possible_steps(self, cargos, cargos_taken, port_to_max_draft):
 
         possible_actions = []
         for cargo in self.cargo_on_board.values():
             travel_time = self.get_travel_time(cargo.destination)
-            if self.current_time + travel_time <= cargo.dischargeDateTo:
+            dest_draft_ok = self.current_draft <= port_to_max_draft[cargo.destination]
+            if self.current_time + travel_time <= cargo.dischargeDateTo and dest_draft_ok:
                 possible_actions.append((cargo.id, "dropoff", travel_time))
 
         for cargo in cargos:
             travel_time = self.get_travel_time(cargo.origin)
-            if cargo.id not in cargos_taken:
-                if self.current_time + travel_time <= cargo.dischargeDateTo and self.weight_check_ok(cargo.weight):
-                    possible_actions.append((cargo.id, "pickup", travel_time))
+
+            travel_time_ok = self.current_time + travel_time <= cargo.dischargeDateTo
+            cargo_not_taken = cargo.id not in cargos_taken
+            weight_ok = self.weight_check_ok(cargo.weight)
+            volume_ok = self.volume_check_ok(cargo.volume)
+            origin_draft_ok = self.draft_origin_check_ok(
+                cargo.weight, port_to_max_draft[cargo.origin])
+            # allowed_ok = self.id in cargo.allowed_vehicles
+            allowed_ok = True  # till we get to use allowed vehicles
+            # if cargo.id not in cargos_taken:
+            #     if self.current_time + travel_time <= cargo.dischargeDateTo and self.weight_check_ok(cargo.weight):
+
+            if all([travel_time_ok, cargo_not_taken, weight_ok, volume_ok, origin_draft_ok, allowed_ok]):
+                possible_actions.append((cargo.id, "pickup", travel_time))
 
         return possible_actions
 
@@ -187,38 +221,49 @@ if __name__ == "__main__":
 
     vehicles = []
 
+    cost_matrix_1 = [[0, 9, 7, 7],
+                     [9, 0, 6, 9],
+                     [7, 6, 0, 8],
+                     [7, 9, 8, 0]]
+
     vehicle = Vehicle(id=1,
                       speed=1,
                       weight_capacity=10,
-                      volume_capacity=None,
+                      volume_capacity=10,
                       draft_capacity=None,
                       current_weight=0,
-                      current_volume=None,
-                      current_draft=None,
+                      current_volume=0,
+                      current_draft=0,
                       distance_matrix=distance_matrix,
-                      cost_matrix=None,
+                      cost_matrix=cost_matrix_1,
                       current_location="port_a",
                       current_time=0,
                       port_to_ind=port_to_ind,
-                      immersion_summer=None,
+                      immersion_summer=1,
                       )
 
     vehicles.append(vehicle)
 
+    cost_matrix_2 = [[0, 5, 4, 2],
+                     [5, 0, 6, 2],
+                     [4, 6, 0, 3],
+                     [2, 2, 3, 0]
+                     ]
+
     vehicle_2 = Vehicle(id=2,
                         speed=1,
                         weight_capacity=15,
-                        volume_capacity=None,
+                        volume_capacity=15,
                         draft_capacity=None,
                         current_weight=0,
-                        current_volume=None,
-                        current_draft=None,
+                        current_volume=0,
+                        current_draft=0,
                         distance_matrix=distance_matrix,
-                        cost_matrix=None,
+                        cost_matrix=cost_matrix_2,
                         current_location="port_a",
                         current_time=0,
                         port_to_ind=port_to_ind,
-                        immersion_summer=None,
+                        immersion_summer=1,
                         )
 
     vehicles.append(vehicle_2)
@@ -234,7 +279,8 @@ if __name__ == "__main__":
                     laycanTo=5,
                     dischargeDateFrom=12,
                     dischargeDateTo=15,
-                    revenue=6.5
+                    revenue=6.5,
+                    # allowed_vehicles=[1, 2]
                     )
     cargos.append(cargo_1)
 
@@ -247,7 +293,8 @@ if __name__ == "__main__":
                     laycanTo=5,
                     dischargeDateFrom=35,
                     dischargeDateTo=38,
-                    revenue=7.5
+                    revenue=7.5,
+                    # allowed_vehicles=[1, 2]
                     )
     cargos.append(cargo_2)
 
@@ -260,7 +307,8 @@ if __name__ == "__main__":
                     laycanTo=5,
                     dischargeDateFrom=35,
                     dischargeDateTo=38,
-                    revenue=7.5
+                    revenue=7.5,
+                    # allowed_vehicles=[1, 2]
                     )
     cargos.append(cargo_3)
 
@@ -273,12 +321,17 @@ if __name__ == "__main__":
                     laycanTo=5,
                     dischargeDateFrom=35,
                     dischargeDateTo=38,
-                    revenue=7.5
+                    revenue=7.5,
+                    # allowed_vehicles=[1, 2]
                     )
 
     cargos.append(cargo_4)
 
-    simulation = Simulation(vehicles, cargos, n_iterations=5)
+    port_to_max_draft = {"port_a": 100,
+                         "port_b": 200, "port_c": 250, "port_d": 150}
+
+    simulation = Simulation(
+        vehicles, cargos, port_to_max_draft, port_to_ind, n_iterations=5)
     result = simulation.solve()
 
     import ipdb

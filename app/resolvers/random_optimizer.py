@@ -4,6 +4,8 @@
 import random as rn
 from copy import deepcopy
 
+import logging
+
 
 class Cargo:
     def __init__(self,
@@ -32,7 +34,7 @@ class Cargo:
         # self.allowed_vehicles = allowed_vehicles
 
 
-class Simulation:
+class RandomOptimizer:
     def __init__(self, vehicles, cargos, port_to_max_draft, port_to_ind, n_iterations):
         self.vehicles = vehicles
         self.cargos = cargos
@@ -79,8 +81,11 @@ class Simulation:
                         n_deliveries += 1
                         cargo = self.cargo_id_to_cargo[cargo_id]
                         vehicle = self.vehicle_id_to_vehicle[vehicle_id]
+                        logging.info(f"cost_matrix: {vehicle.cost_matrix}")
                         cost = vehicle.cost_matrix[self.port_to_ind[cargo.origin]
                                                    ][self.port_to_ind[cargo.destination]]
+                        logging.info(f"cost: {cost}")
+                        logging.info(f"cargo.revenue: {cargo.revenue}")
                         profit = cargo.revenue - cost
 
             scored_runs.append((vehicle_to_steps, n_deliveries, cost, profit))
@@ -141,8 +146,8 @@ class Vehicle:
         self.deliveries = deliveries
 
     def get_travel_time(self, location):
-        distance = self.distance_matrix[port_to_ind[self.current_location]
-                                        ][port_to_ind[location]]
+        distance = self.distance_matrix[self.port_to_ind[self.current_location]
+                                        ][self.port_to_ind[location]]
 
         return distance / self.speed
 
@@ -210,26 +215,38 @@ class Vehicle:
         return random_step
 
 
-def make_vehicles(vehicle_json, distance_matrix, cost_matrix, port_to_ind, start_time=0):
+def make_vehicles(vehicle_json, distance_matrix, cost_matrices, port_to_ind, start_time=0):
     vehicles = []
-    for v_js in vehicles_json:
-        vehicle = Vehicle()
+    for v_js, cost_matrix in zip(vehicle_json, cost_matrices):
 
-        vehicle.id = v_js["id"]
-        vehicle.speed = v_js["vehicleSpeed"]["value"]
-        vehicle.weight_capacity = v_js["weightCapacity"]["value"]
-        vehicle.volume_capacity = v_js["volumeCapacity"]["value"]
-        vehicle.current_weight = 0
-        vehicle.current_volume = 0
+        id = v_js["id"]
+        speed = v_js["vehicleSpeed"]["value"]
+        weight_capacity = v_js["weightCapacity"]["value"]
+        volume_capacity = v_js["volumeCapacity"]["value"]
         md = v_js["vehicleDimensions"]["depth"]["max"]
         mw = weight_capacity
         s = v_js["vehicleDimensions"]["depth"]["massMultiplier"]
-        vehicle.current_draft = md - (mw / s)
-        vehicle.current_location = v_js["startingLocation"]["id"]
-        vehicle.current_time = 0
-        vehicle.distance_matrix = distance_matrix
-        vehicle.cost_matrix = cost_matrix
-        vehicle.port_to_ind = port_to_ind
+        current_draft = md - (mw / s)
+        current_location = v_js["startingLocation"]["id"]
+        distance_matrix = distance_matrix
+        cost_matrix = cost_matrix
+        port_to_ind = port_to_ind
+
+        vehicle = Vehicle(id=id,
+                          speed=speed,
+                          weight_capacity=weight_capacity,
+                          volume_capacity=volume_capacity,
+                          draft_capacity=md,
+                          current_weight=0,
+                          current_volume=0,
+                          current_draft=current_draft,
+                          distance_matrix=distance_matrix,
+                          cost_matrix=cost_matrix,
+                          current_location=current_location,
+                          current_time=0,
+                          port_to_ind=port_to_ind,
+                          immersion_summer=s
+                          )
 
         vehicles.append(vehicle)
 
@@ -238,8 +255,11 @@ def make_vehicles(vehicle_json, distance_matrix, cost_matrix, port_to_ind, start
 
 def make_port_to_ind(distance_matrix_json):
 
+    print(f"distance_matrix_json_1: {distance_matrix_json}")
+
     port_to_ind = {}
     for ind, row in enumerate(distance_matrix_json["rows"]):
+        port = row["id"].split("::")[0]
         port_to_ind[row["id"]] = ind
 
     return port_to_ind
@@ -247,19 +267,76 @@ def make_port_to_ind(distance_matrix_json):
 
 def make_distance_matrix(distance_matrix_json):
     distance_matrix = []
-    for row in distance_matrix_json:
+    print(f"distance_matrix_json_2: {distance_matrix_json}")
+    for row in distance_matrix_json["rows"]:
         distance_matrix.append(row["values"])
     return distance_matrix
 
 
 def make_cost_matrices(cost_matrices_json):
     cost_matrices = []
-    for cost_matrix_json in cost_matrices_json:
+    for cost_matrix_json in cost_matrices_json["costMatrices"]:
         cost_matrix = []
-        for row in cost_matrix_json:
-            cost_matrix.append(row)
+        for row in cost_matrix_json["rows"]:
+            cost_matrix.append(row["values"])
         cost_matrices.append(cost_matrix)
     return cost_matrices
+
+
+def convert_cargo(input_cargos):
+
+    cargos = []
+
+    for input_cargo in input_cargos:
+        cargo = Cargo()
+
+        cargo.id = input_cargo["id"]
+        cargo.volume = input_cargo["volume"]
+        cargo.weight = input_cargo["weight"]
+        cargo.origin = input_cargo["routePair"]["origin"]["id"].split("::")[0]
+        cargo.destination = input_cargo["routePair"]["destination"]["id"].split("::")[
+            0]
+        cargo.laycanFrom = input_cargo["loadWindow"]["timeWindow"]["start"]
+        cargo.laycanTo = input_cargo["loadWindow"]["timeWindow"]["end"]
+        cargo.dischargeDateFrom = input_cargo["unloadWindow"]["timeWindow"]["start"]
+        cargo.dischargeDateTo = input_cargo["unloadWindow"]["timeWindow"]["end"]
+        cargo.revenue = input_cargo["revenue"]
+
+        cargos.append(cargo)
+
+    return cargos
+
+
+def make_port_to_max_draft(cargo_json):
+
+    port_to_max_draft = {}
+    for cargo in cargo_json:
+        origin_port = cargo["routePair"]["origin"]["id"].split("::")[0]
+        port_to_max_draft[origin_port] = cargo["routePair"]["origin"]["dimension"]["depth"]["max"]
+        destination_port = cargo["routePair"]["destination"]["id"].split("::")[
+            0]
+        port_to_max_draft[destination_port] = cargo["routePair"]["destination"]["dimension"]["depth"]["max"]
+
+    return port_to_max_draft
+
+
+def random_optimizer_wrapper(cargos_json, vehicle_json, cost_matrices_json, distance_matrix_json):
+
+    cargos = convert_cargo(cargos_json)
+    port_to_ind = make_port_to_ind(distance_matrix_json)
+    logging.info(f"port_to_ind: {port_to_ind}")
+    distance_matrix = make_distance_matrix(distance_matrix_json)
+    cost_matrices = make_cost_matrices(cost_matrices_json)
+    logging.info(f"cost_matrices: {cost_matrices}")
+    vehicles = make_vehicles(
+        vehicle_json, distance_matrix, cost_matrices, port_to_ind, start_time=0)
+    port_to_max_draft = make_port_to_max_draft(cargos_json)
+
+    simulation = RandomOptimizer(
+        vehicles, cargos, port_to_max_draft, port_to_ind, n_iterations=5)
+    result = simulation.solve()
+
+    return result[0]
 
 
 if __name__ == "__main__":
@@ -382,7 +459,7 @@ if __name__ == "__main__":
     port_to_max_draft = {"port_a": 100,
                          "port_b": 200, "port_c": 250, "port_d": 150}
 
-    simulation = Simulation(
+    simulation = RandomOptimizer(
         vehicles, cargos, port_to_max_draft, port_to_ind, n_iterations=5)
     result = simulation.solve()
 

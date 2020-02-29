@@ -6,6 +6,7 @@ from ortools.linear_solver import pywraplp
 from ortools.sat.python import cp_model
 
 from app.resolvers.optimizer import Optimizer
+from app.resolvers.random_optimizer import random_optimizer_wrapper
 from app.resolvers.create_data import create_data_model
 
 import logging
@@ -97,20 +98,29 @@ def resolve_routing_solver(*_, vehicles, requirements, costMatrix, distanceMatri
     data = create_data_model(vehicles, requirements,
                              costMatrix, distanceMatrix, routingTimeWindow)
 
-    manager = pywrapcp.RoutingIndexManager(
-        len(data['distance_matrix']
-            ), data['num_vehicles'], data["starts"], data["ends"])
+    if objective["firstSolutionStrategy"]["id"] == "randomOptimizer":
+        print(f"using random optimizer")
+        solution = random_optimizer_wrapper(
+            requirements, vehicles, costMatrix, distanceMatrix)
 
-    optimizer = Optimizer(objective["firstSolutionStrategy"]["id"],
-                          objective["localSearchStrategy"]["id"],
-                          objective["solutionLimit"]
-                          )
+        print(f"SOLUTION: {solution}")
 
-    routing = pywrapcp.RoutingModel(manager)
+    else:
 
-    raw_solution = optimizer.optimize(data, manager, routing)
+        manager = pywrapcp.RoutingIndexManager(
+            len(data['distance_matrix']
+                ), data['num_vehicles'], data["starts"], data["ends"])
 
-    return raw_solution["d_solution"]
+        optimizer = Optimizer(objective["firstSolutionStrategy"]["id"],
+                              objective["localSearchStrategy"]["id"],
+                              objective["solutionLimit"]
+                              )
+
+        routing = pywrapcp.RoutingModel(manager)
+
+        raw_solution = optimizer.optimize(data, manager, routing)
+
+        return raw_solution["d_solution"]
 
 
 def resolve_routing_solver_mapper(query):

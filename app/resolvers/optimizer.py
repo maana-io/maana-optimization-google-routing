@@ -303,7 +303,8 @@ class Optimizer:
 
         # This allows for incomplete solutuon,
         for node in range(1, len(data['distance_matrix'])):
-            routing.AddDisjunction([manager.NodeToIndex(node)], 1000)
+            routing.AddDisjunction(
+                [manager.NodeToIndex(node)], 1000 * 1000 * 1000)
 
         # Just testing minStart and minEnd
 

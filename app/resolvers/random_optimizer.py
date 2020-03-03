@@ -51,6 +51,9 @@ class RandomOptimizer:
         active_vehicle_ids = list(self.vehicle_id_to_vehicle)
         vehicle_id_to_vehicle_copy = deepcopy(self.vehicle_id_to_vehicle)
 
+        logging.info(
+            f"vehicle_id_to_vehicle_copy: {vehicle_id_to_vehicle_copy}")
+
         while active_vehicle_ids:
 
             vehicle_id = rn.choice(active_vehicle_ids)
@@ -61,6 +64,9 @@ class RandomOptimizer:
             if not possible_steps:
                 active_vehicle_ids.remove(vehicle_id)
                 continue
+
+            logging.info(f"possible steps: {possible_steps}")
+
             step = vehicle.choose_step(possible_steps)
             vehicle_id_to_steps[vehicle_id].append(step)
 
@@ -81,11 +87,11 @@ class RandomOptimizer:
                         n_deliveries += 1
                         cargo = self.cargo_id_to_cargo[cargo_id]
                         vehicle = self.vehicle_id_to_vehicle[vehicle_id]
-                        logging.info(f"cost_matrix: {vehicle.cost_matrix}")
+                        # logging.info(f"cost_matrix: {vehicle.cost_matrix}")
                         cost = vehicle.cost_matrix[self.port_to_ind[cargo.origin]
                                                    ][self.port_to_ind[cargo.destination]]
-                        logging.info(f"cost: {cost}")
-                        logging.info(f"cargo.revenue: {cargo.revenue}")
+                        # logging.info(f"cost: {cost}")
+                        # logging.info(f"cargo.revenue: {cargo.revenue}")
                         profit = cargo.revenue - cost
 
             scored_runs.append((vehicle_to_steps, n_deliveries, cost, profit))
@@ -142,8 +148,8 @@ class Vehicle:
         self.current_time = current_time
         self.port_to_ind = port_to_ind
         self.immersion_summer = immersion_summer
-        self.cargo_on_board = cargo_on_board
-        self.deliveries = deliveries
+        self.cargo_on_board = deepcopy(cargo_on_board)
+        self.deliveries = deepcopy(deliveries)
 
     def get_travel_time(self, location):
         distance = self.distance_matrix[self.port_to_ind[self.current_location]
@@ -168,6 +174,9 @@ class Vehicle:
 
     def calc_possible_steps(self, cargos, cargos_taken, port_to_max_draft):
 
+        logging.info(
+            f"vehicle id: {self.id}, cargo_on_board: {self.cargo_on_board}")
+
         possible_actions = []
         for cargo in self.cargo_on_board.values():
             travel_time = self.get_travel_time(cargo.destination)
@@ -178,7 +187,7 @@ class Vehicle:
         for cargo in cargos:
             travel_time = self.get_travel_time(cargo.origin)
 
-            travel_time_ok = self.current_time + travel_time <= cargo.dischargeDateTo
+            travel_time_ok = self.current_time + travel_time <= cargo.laycanTo
             cargo_not_taken = cargo.id not in cargos_taken
             weight_ok = self.weight_check_ok(cargo.weight)
             volume_ok = self.volume_check_ok(cargo.volume)
@@ -192,20 +201,36 @@ class Vehicle:
             if all([travel_time_ok, cargo_not_taken, weight_ok, volume_ok, origin_draft_ok, allowed_ok]):
                 possible_actions.append((cargo.id, "pickup", travel_time))
 
+        print(f"vehicle time: {self.current_time}")
+        print(f"possible actions: {possible_actions}")
+
         return possible_actions
 
     def take_step(self, step, cargo_id_to_cargo):
+
         cargo_id, action, travel_time = step
         cargo = cargo_id_to_cargo[cargo_id]
         if action == "dropoff":
             self.current_weight -= cargo.weight
-            self.current_time += travel_time
+            print(f"dropoff")
+            print(f"cargo_id: {cargo_id}")
+            print(f"orig current_time: {self.current_time}")
+            print(f"travel_time: {travel_time}")
+            self.current_time = max(
+                self.current_time + travel_time, cargo.dischargeDateFrom)
+            print(f"new current_time: {self.current_time}")
             self.current_location = cargo.destination
             self.deliveries.append(cargo)
             self.cargo_on_board.pop(cargo_id)
         elif action == "pickup":
+            print(f"pickup")
+            print(f"cargo_id: {cargo_id}")
+            print(f"current_time: {self.current_time}")
+            print(f"travel_time: {travel_time}")
             self.current_weight += cargo.weight
-            self.current_time += travel_time
+            self.current_time = max(
+                self.current_time + travel_time, cargo.laycanFrom)
+            print(f"new_current_time: {self.current_time}")
             self.current_location = cargo.origin
             self.cargo_on_board[cargo_id] = cargo
             return cargo_id

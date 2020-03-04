@@ -317,7 +317,7 @@ def convert_cargo(input_cargos):
         cargo.laycanTo = input_cargo["loadWindow"]["timeWindow"]["end"]
         cargo.dischargeDateFrom = input_cargo["unloadWindow"]["timeWindow"]["start"]
         cargo.dischargeDateTo = input_cargo["unloadWindow"]["timeWindow"]["end"]
-        cargo.revenue = input_cargo["revenue"]
+        cargo.revenue = input_cargo["revenue"] * 1000
 
         cargos.append(cargo)
 

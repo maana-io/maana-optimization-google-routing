@@ -80,7 +80,7 @@ def resolve_pickups_and_deliveries(*_, cost, constraints, objectives):
             constraints["numVehicles"], manager, routing, assignment)
         return schedule
     else:
-        print("Could not compute schedule")
+        logging.info("Could not compute schedule")
 
 
 def resolve_pickups_and_deliveries_mapper(query):
@@ -98,12 +98,14 @@ def resolve_routing_solver(*_, vehicles, requirements, costMatrix, distanceMatri
     data = create_data_model(vehicles, requirements,
                              costMatrix, distanceMatrix, routingTimeWindow)
 
-    if objective["firstSolutionStrategy"]["id"] == "randomOptimizer":
-        print(f"using random optimizer")
+    if "randomOptimizer" in objective["firstSolutionStrategy"]["id"]:
+        n_iterations = int(
+            objective["firstSolutionStrategy"]["id"].split("_")[1])
+        logging.info(f"using random optimizer")
         solution = random_optimizer_wrapper(
-            requirements, vehicles, costMatrix, distanceMatrix)
+            requirements, vehicles, costMatrix, distanceMatrix, n_iterations)
 
-        print(f"SOLUTION: {solution}")
+        logging.info(f"SOLUTION: {solution}")
 
     else:
 

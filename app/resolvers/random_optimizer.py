@@ -201,8 +201,8 @@ class Vehicle:
             if all([travel_time_ok, cargo_not_taken, weight_ok, volume_ok, origin_draft_ok, allowed_ok]):
                 possible_actions.append((cargo.id, "pickup", travel_time))
 
-        print(f"vehicle time: {self.current_time}")
-        print(f"possible actions: {possible_actions}")
+        logging.info(f"vehicle time: {self.current_time}")
+        logging.info(f"possible actions: {possible_actions}")
 
         return possible_actions
 
@@ -212,25 +212,17 @@ class Vehicle:
         cargo = cargo_id_to_cargo[cargo_id]
         if action == "dropoff":
             self.current_weight -= cargo.weight
-            print(f"dropoff")
-            print(f"cargo_id: {cargo_id}")
-            print(f"orig current_time: {self.current_time}")
-            print(f"travel_time: {travel_time}")
+            logging.info(f"dropoff")
+            logging.info(f"cargo_id: {cargo_id}")
             self.current_time = max(
                 self.current_time + travel_time, cargo.dischargeDateFrom)
-            print(f"new current_time: {self.current_time}")
             self.current_location = cargo.destination
             self.deliveries.append(cargo)
             self.cargo_on_board.pop(cargo_id)
         elif action == "pickup":
-            print(f"pickup")
-            print(f"cargo_id: {cargo_id}")
-            print(f"current_time: {self.current_time}")
-            print(f"travel_time: {travel_time}")
             self.current_weight += cargo.weight
             self.current_time = max(
                 self.current_time + travel_time, cargo.laycanFrom)
-            print(f"new_current_time: {self.current_time}")
             self.current_location = cargo.origin
             self.cargo_on_board[cargo_id] = cargo
             return cargo_id
@@ -280,7 +272,7 @@ def make_vehicles(vehicle_json, distance_matrix, cost_matrices, port_to_ind, sta
 
 def make_port_to_ind(distance_matrix_json):
 
-    print(f"distance_matrix_json_1: {distance_matrix_json}")
+    logging.info(f"distance_matrix_json_1: {distance_matrix_json}")
 
     port_to_ind = {}
     for ind, row in enumerate(distance_matrix_json["rows"]):
@@ -292,7 +284,7 @@ def make_port_to_ind(distance_matrix_json):
 
 def make_distance_matrix(distance_matrix_json):
     distance_matrix = []
-    print(f"distance_matrix_json_2: {distance_matrix_json}")
+    logging.info(f"distance_matrix_json_2: {distance_matrix_json}")
     for row in distance_matrix_json["rows"]:
         distance_matrix.append(row["values"])
     return distance_matrix
@@ -345,7 +337,7 @@ def make_port_to_max_draft(cargo_json):
     return port_to_max_draft
 
 
-def random_optimizer_wrapper(cargos_json, vehicle_json, cost_matrices_json, distance_matrix_json):
+def random_optimizer_wrapper(cargos_json, vehicle_json, cost_matrices_json, distance_matrix_json, n_iterations):
 
     cargos = convert_cargo(cargos_json)
     port_to_ind = make_port_to_ind(distance_matrix_json)
@@ -358,7 +350,7 @@ def random_optimizer_wrapper(cargos_json, vehicle_json, cost_matrices_json, dist
     port_to_max_draft = make_port_to_max_draft(cargos_json)
 
     simulation = RandomOptimizer(
-        vehicles, cargos, port_to_max_draft, port_to_ind, n_iterations=5)
+        vehicles, cargos, port_to_max_draft, port_to_ind, n_iterations=n_iterations)
     result = simulation.solve()
 
     return result[0]

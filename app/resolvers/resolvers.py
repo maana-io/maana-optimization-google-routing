@@ -9,7 +9,9 @@ from app.resolvers.optimizer import Optimizer
 from app.resolvers.random_optimizer import random_optimizer_wrapper
 from app.resolvers.create_data import create_data_model
 
+import json
 import logging
+from time import time
 
 
 def resolve_pickups_and_deliveries(*_, cost, constraints, objectives):
@@ -117,8 +119,6 @@ def resolve_routing_solver(*_, vehicles, requirements, costMatrix, distanceMatri
         solution = random_optimizer_wrapper(
             requirements, vehicles, costMatrix, distanceMatrix, n_iterations)
 
-        logging.info(f"SOLUTION: {solution}")
-
     else:
 
         manager = pywrapcp.RoutingIndexManager(
@@ -133,6 +133,15 @@ def resolve_routing_solver(*_, vehicles, requirements, costMatrix, distanceMatri
         routing = pywrapcp.RoutingModel(manager)
 
         raw_solution = optimizer.optimize(data, manager, routing)
+
+        logging.warn("SOLUTION: {}".format(raw_solution["d_solution"]))
+
+        current_time = str(int(time()))
+        try:
+            with open("solution_{}.json".format(current_time), "w") as f:
+                json.dump(raw_solution["d_solution"], f)
+        except Exception as exc:
+            logging.error(exc)
 
         return raw_solution["d_solution"]
 

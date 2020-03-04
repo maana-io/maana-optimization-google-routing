@@ -95,6 +95,18 @@ def resolve_routing_solver(*_, vehicles, requirements, costMatrix, distanceMatri
     logging.info(f"distanceMatrix: {distanceMatrix}")
     logging.info(f"objective: {objective}")
 
+    logging.warn(f"vehicles: {vehicles}")
+    logging.warn(f"requirements: {requirements}")
+    logging.warn(f"costMatrix: {costMatrix}")
+    logging.warn(f"distanceMatrix: {distanceMatrix}")
+    logging.warn(f"objective: {objective}")
+
+    print(f"vehicles: {vehicles}")
+    print(f"requirements: {requirements}")
+    print(f"costMatrix: {costMatrix}")
+    print(f"distanceMatrix: {distanceMatrix}")
+    print(f"objective: {objective}")
+
     data = create_data_model(vehicles, requirements,
                              costMatrix, distanceMatrix, routingTimeWindow)
 

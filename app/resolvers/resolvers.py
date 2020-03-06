@@ -8,10 +8,9 @@ from ortools.sat.python import cp_model
 from app.resolvers.optimizer import Optimizer
 from app.resolvers.random_optimizer import random_optimizer_wrapper
 from app.resolvers.create_data import create_data_model
+from app.utils.helpers import save_data_to_file
 
-import json
 import logging
-from time import time
 
 
 def resolve_pickups_and_deliveries(*_, cost, constraints, objectives):
@@ -91,23 +90,17 @@ def resolve_pickups_and_deliveries_mapper(query):
 
 def resolve_routing_solver(*_, vehicles, requirements, costMatrix, distanceMatrix, objective, routingTimeWindow):
 
-    logging.info(f"vehicles: {vehicles}")
-    logging.info(f"requirements: {requirements}")
-    logging.info(f"costMatrix: {costMatrix}")
-    logging.info(f"distanceMatrix: {distanceMatrix}")
-    logging.info(f"objective: {objective}")
+    save_data_to_file(vehicles, "vehicles")
+    save_data_to_file(requirements, "requirements")
+    save_data_to_file(costMatrix, "cost_matrix")
+    save_data_to_file(distanceMatrix, "distanceMatrix")
+    save_data_to_file(objective, "objective")
 
-    logging.warn(f"vehicles: {vehicles}")
-    logging.warn(f"requirements: {requirements}")
-    logging.warn(f"costMatrix: {costMatrix}")
-    logging.warn(f"distanceMatrix: {distanceMatrix}")
-    logging.warn(f"objective: {objective}")
+    report = {"n_vehicles": len(vehicles),
+              "n_requirements": len(requirements)
+              }
 
-    print(f"vehicles: {vehicles}")
-    print(f"requirements: {requirements}")
-    print(f"costMatrix: {costMatrix}")
-    print(f"distanceMatrix: {distanceMatrix}")
-    print(f"objective: {objective}")
+    save_data_to_file(report, "report")
 
     data = create_data_model(vehicles, requirements,
                              costMatrix, distanceMatrix, routingTimeWindow)
@@ -136,12 +129,7 @@ def resolve_routing_solver(*_, vehicles, requirements, costMatrix, distanceMatri
 
         logging.warn("SOLUTION: {}".format(raw_solution["d_solution"]))
 
-        current_time = str(int(time()))
-        try:
-            with open("solution_{}.json".format(current_time), "w") as f:
-                json.dump(raw_solution["d_solution"], f)
-        except Exception as exc:
-            logging.error(exc)
+        save_data_to_file(raw_solution["d_solution"], "solution")
 
         return raw_solution["d_solution"]
 

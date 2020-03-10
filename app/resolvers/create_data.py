@@ -42,7 +42,9 @@ def convert_vehicle_data(vehicles):
             vehicle["volumeCapacity"]["value"])
         vehicle_data["vehicle_weight_capacities"].append(
             vehicle["weightCapacity"]["value"])
-        vehicle_data["vessel_speeds"].append(vehicle["vehicleSpeed"]["value"])
+        speed_hack = 20
+        vehicle_data["vessel_speeds"].append(
+            vehicle["vehicleSpeed"]["value"] / speed_hack)
         empty_draft = calc_empty_draft(vehicle)
         logging.info(f"vehicle ind: {ind}, empty_draft: {empty_draft}")
         vehicle_data["vessel_empty_draft"].append(
@@ -139,7 +141,7 @@ def convert_cargo(input_cargos):
         cargo.laycanTo = input_cargo["loadWindow"]["timeWindow"]["end"]
         cargo.dischargeDateFrom = input_cargo["unloadWindow"]["timeWindow"]["start"]
         cargo.dischargeDateTo = input_cargo["unloadWindow"]["timeWindow"]["end"]
-        cargo.revenue = input_cargo["revenue"] * 1000
+        cargo.revenue = input_cargo["revenue"]
 
         cargos.append(cargo)
 

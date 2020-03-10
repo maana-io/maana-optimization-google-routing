@@ -158,9 +158,6 @@ def add_port_draft(cargos_json, port_to_ind):
 
     port_draft_max = {}
 
-    print("cargos_json")
-    print(cargos_json)
-
     port_to_max_draft = {}
     for cargo in cargos_json:
         origin_port_id = cargo["routePair"]["origin"]["id"].split("::")[0]
@@ -225,7 +222,7 @@ def create_data_model(vehicles, requirements, costMatrix, distanceMatrix, routin
     port_to_ind = get_ports_mapping(distance_matrix_json)
     original_cargos = modify_cargo_ports(original_cargos, port_to_ind)
 
-    print(f"port_to_ind: {port_to_ind}")
+    logging.info(f"port_to_ind: {port_to_ind}")
 
     ind_to_port = {v: k for k, v in port_to_ind.items()}
     data["port_to_ind"] = port_to_ind

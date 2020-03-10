@@ -6,7 +6,7 @@ import random as rn
 from app.resolvers.optimizer_types import Cargo
 
 import json
-import logging
+from app.logger import logger
 
 
 def buildDistanceMatrix(raw_distances, ports):

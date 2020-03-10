@@ -6,7 +6,7 @@ from ortools.constraint_solver import pywrapcp
 from app.utils.routing_solver_utils import get_solution, dedummify
 from app.resolvers.optimizer_parameters import parameters as p
 
-import logging
+from app.logger import logger
 
 
 class Optimizer:
@@ -17,34 +17,34 @@ class Optimizer:
 
     def set_first_solution_strategy(self, first_solution_strategy):
         if not first_solution_strategy:
-            logging.info("using automatic as first solution strategy")
+            logger.info("using automatic as first solution strategy")
             self.first_solution_strategy = routing_enums_pb2.FirstSolutionStrategy.AUTOMATIC
         elif first_solution_strategy.lower() == "automatic":
-            logging.info("using automatic as first solution strategy")
+            logger.info("using automatic as first solution strategy")
             self.first_solution_strategy = routing_enums_pb2.FirstSolutionStrategy.AUTOMATIC
         elif first_solution_strategy.lower() == "parallel_cheapest_insertion":
-            logging.info(
+            logger.info(
                 "using parallel cheapest insertion as first solution strategy")
             self.first_solution_strategy = routing_enums_pb2.FirstSolutionStrategy.PARALLEL_CHEAPEST_INSERTION
         elif first_solution_strategy.lower() == "path_most_constrained_arc":
-            logging.info(
+            logger.info(
                 "using path most constrained arc as first solution strategy")
             self.first_solution_strategy = routing_enums_pb2.FirstSolutionStrategy.PATH_MOST_CONSTRAINED_ARC
         elif first_solution_strategy.lower() == "path_cheapest_arc":
-            logging.info("using path cheapest arc as first solution strategy")
+            logger.info("using path cheapest arc as first solution strategy")
             self.first_solution_strategy = routing_enums_pb2.FirstSolutionStrategy.PATH_CHEAPEST_ARC
         elif first_solution_strategy.lower() == "global_cheapest_arc":
-            logging.info(
+            logger.info(
                 "using global cheapest arc as first solution strategy")
             self.first_solution_strategy = routing_enums_pb2.FirstSolutionStrategy.GLOBAL_CHEAPEST_ARC
         elif first_solution_strategy.lower() == "sweep":
-            logging.info("using sweep as first solution strategy")
+            logger.info("using sweep as first solution strategy")
             self.first_solution_strategy = routing_enums_pb2.FirstSolutionStrategy.SWEEP
         elif first_solution_strategy.lower() == "christofides":
-            logging.info("using christofides as first solution strategy")
+            logger.info("using christofides as first solution strategy")
             self.first_solution_strategy = routing_enums_pb2.FirstSolutionStrategy.CHRISTOFIDES
         else:
-            logging.info(
+            logger.info(
                 f"{first_solution_strategy} is not a valid first solution strategy, defaulting to AUTOMATIC")
             self.first_solution_strategy = routing_enums_pb2.FirstSolutionStrategy.AUTOMATIC
 
@@ -53,18 +53,18 @@ class Optimizer:
 
             self.local_search_metaheuristic = routing_enums_pb2.LocalSearchMetaheuristic.GREEDY_DESCENT
         elif local_search_metaheuristic.lower() == "greedy_descent":
-            logging.info(
+            logger.info(
                 "using local search metaheuristic: greedy descent")
             self.local_search_metaheuristic = routing_enums_pb2.LocalSearchMetaheuristic.GREEDY_DESCENT
         elif local_search_metaheuristic.lower() == "tabu_search":
-            logging.info("using local search metaheuristic: tabu search")
+            logger.info("using local search metaheuristic: tabu search")
             self.local_search_metaheuristic = routing_enums_pb2.LocalSearchMetaheuristic.TABU_SEARCH
         elif local_search_metaheuristic == "simulated_annealing":
-            logging.info(
+            logger.info(
                 "using local search metaheuristic: simulated_annealing")
             self.local_search_metaheuristic = routing_enums_pb2.LocalSearchMetaheuristic.SIMULATED_ANNEALING
         else:
-            logging.info(
+            logger.info(
                 f"{local_search_metaheuristic} is not a valid local search metaheuristic, defaulting to GREEDY_DESCENT")
             self.local_search_metaheuristic = routing_enums_pb2.LocalSearchMetaheuristic.GREEDY_DESCENT
 
@@ -369,5 +369,5 @@ class Optimizer:
 
             return {"solution": solution, "d_solution": d_solution}
         else:
-            logging.error("NO SOLUTION FOUND!!!")
+            logger.error("NO SOLUTION FOUND!!!")
             return None

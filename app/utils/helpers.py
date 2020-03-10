@@ -1,15 +1,16 @@
 
 import json
 from time import time
-import logging
+
+from app.logger import logger
 
 
 def save_data_to_file(data, base_filename):
     current_time = str(int(time()))
+    filename = "{}_{}.json".format(base_filename, current_time)
+    logger.info(f"trying to write: {filename}")
     try:
-        filename = "{}_{}.json".format(base_filename, current_time)
-        logging.info("trying to write: {filename}")
         with open(filename, "w") as f:
             json.dump(data, f)
     except Exception as exc:
-        logging.error(exc)
+        logger.error(exc)

@@ -4,7 +4,7 @@
 import random as rn
 from copy import deepcopy
 
-import logging
+from app.logger import logger
 
 
 class Cargo:
@@ -51,7 +51,7 @@ class RandomOptimizer:
         active_vehicle_ids = list(self.vehicle_id_to_vehicle)
         vehicle_id_to_vehicle_copy = deepcopy(self.vehicle_id_to_vehicle)
 
-        logging.info(
+        logger.info(
             f"vehicle_id_to_vehicle_copy: {vehicle_id_to_vehicle_copy}")
 
         while active_vehicle_ids:
@@ -65,7 +65,7 @@ class RandomOptimizer:
                 active_vehicle_ids.remove(vehicle_id)
                 continue
 
-            logging.info(f"possible steps: {possible_steps}")
+            logger.info(f"possible steps: {possible_steps}")
 
             step = vehicle.choose_step(possible_steps)
             vehicle_id_to_steps[vehicle_id].append(step)
@@ -87,11 +87,11 @@ class RandomOptimizer:
                         n_deliveries += 1
                         cargo = self.cargo_id_to_cargo[cargo_id]
                         vehicle = self.vehicle_id_to_vehicle[vehicle_id]
-                        # logging.info(f"cost_matrix: {vehicle.cost_matrix}")
+                        # logger.info(f"cost_matrix: {vehicle.cost_matrix}")
                         cost = vehicle.cost_matrix[self.port_to_ind[cargo.origin]
                                                    ][self.port_to_ind[cargo.destination]]
-                        # logging.info(f"cost: {cost}")
-                        # logging.info(f"cargo.revenue: {cargo.revenue}")
+                        # logger.info(f"cost: {cost}")
+                        # logger.info(f"cargo.revenue: {cargo.revenue}")
                         profit = cargo.revenue - cost
 
             scored_runs.append((vehicle_to_steps, n_deliveries, cost, profit))
@@ -174,7 +174,7 @@ class Vehicle:
 
     def calc_possible_steps(self, cargos, cargos_taken, port_to_max_draft):
 
-        logging.info(
+        logger.info(
             f"vehicle id: {self.id}, cargo_on_board: {self.cargo_on_board}")
 
         possible_actions = []
@@ -201,8 +201,8 @@ class Vehicle:
             if all([travel_time_ok, cargo_not_taken, weight_ok, volume_ok, origin_draft_ok, allowed_ok]):
                 possible_actions.append((cargo.id, "pickup", travel_time))
 
-        logging.info(f"vehicle time: {self.current_time}")
-        logging.info(f"possible actions: {possible_actions}")
+        logger.info(f"vehicle time: {self.current_time}")
+        logger.info(f"possible actions: {possible_actions}")
 
         return possible_actions
 
@@ -212,8 +212,8 @@ class Vehicle:
         cargo = cargo_id_to_cargo[cargo_id]
         if action == "dropoff":
             self.current_weight -= cargo.weight
-            logging.info(f"dropoff")
-            logging.info(f"cargo_id: {cargo_id}")
+            logger.info(f"dropoff")
+            logger.info(f"cargo_id: {cargo_id}")
             self.current_time = max(
                 self.current_time + travel_time, cargo.dischargeDateFrom)
             self.current_location = cargo.destination
@@ -272,7 +272,7 @@ def make_vehicles(vehicle_json, distance_matrix, cost_matrices, port_to_ind, sta
 
 def make_port_to_ind(distance_matrix_json):
 
-    logging.info(f"distance_matrix_json_1: {distance_matrix_json}")
+    logger.info(f"distance_matrix_json_1: {distance_matrix_json}")
 
     port_to_ind = {}
     for ind, row in enumerate(distance_matrix_json["rows"]):
@@ -284,7 +284,7 @@ def make_port_to_ind(distance_matrix_json):
 
 def make_distance_matrix(distance_matrix_json):
     distance_matrix = []
-    logging.info(f"distance_matrix_json_2: {distance_matrix_json}")
+    logger.info(f"distance_matrix_json_2: {distance_matrix_json}")
     for row in distance_matrix_json["rows"]:
         distance_matrix.append(row["values"])
     return distance_matrix
@@ -341,10 +341,10 @@ def random_optimizer_wrapper(cargos_json, vehicle_json, cost_matrices_json, dist
 
     cargos = convert_cargo(cargos_json)
     port_to_ind = make_port_to_ind(distance_matrix_json)
-    logging.info(f"port_to_ind: {port_to_ind}")
+    logger.info(f"port_to_ind: {port_to_ind}")
     distance_matrix = make_distance_matrix(distance_matrix_json)
     cost_matrices = make_cost_matrices(cost_matrices_json)
-    logging.info(f"cost_matrices: {cost_matrices}")
+    logger.info(f"cost_matrices: {cost_matrices}")
     vehicles = make_vehicles(
         vehicle_json, distance_matrix, cost_matrices, port_to_ind, start_time=0)
     port_to_max_draft = make_port_to_max_draft(cargos_json)

@@ -10,26 +10,29 @@ from app.resolvers.random_optimizer import random_optimizer_wrapper
 from app.resolvers.create_data import create_data_model
 from app.utils.helpers import save_data_to_file
 
-import logging
+# import logging
 # from logging.config import fileConfig
 # fileConfig("../log_config.ini")
 
-logger = logging.getLogger("optimizer")
-logger.setLevel(logging.DEBUG)
+from app.logger import logger
 
-formatter = logging.Formatter(
-    '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
-fh = logging.FileHandler('log_file_test.log')
-fh.setLevel(logging.DEBUG)
-fh.setFormatter(formatter)
+# logger = logging.getLogger("optimizer")
+# logger.setLevel(logging.DEBUG)
 
-ch = logging.StreamHandler()
-ch.setLevel(logging.INFO)
-ch.setFormatter(formatter)
+# formatter = logging.Formatter(
+#     '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
-logger.addHandler(fh)
-logger.addHandler(ch)
+# fh = logging.FileHandler('log_file_test.log')
+# fh.setLevel(logging.DEBUG)
+# fh.setFormatter(formatter)
+
+# ch = logging.StreamHandler()
+# ch.setLevel(logging.INFO)
+# ch.setFormatter(formatter)
+
+# logger.addHandler(fh)
+# logger.addHandler(ch)
 
 
 def resolve_pickups_and_deliveries(*_, cost, constraints, objectives):
@@ -147,11 +150,6 @@ def resolve_routing_solver(*_, vehicles, requirements, costMatrix, distanceMatri
         raw_solution = optimizer.optimize(data, manager, routing)
 
         save_data_to_file(raw_solution["d_solution"], "solution")
-
-        logger.debug("Test log debug")
-        logger.info("Test log info")
-        logger.warn("Test log warning")
-        logger.error("Test log error")
 
         return raw_solution["d_solution"]
 

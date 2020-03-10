@@ -43,9 +43,8 @@ def convert_vehicle_data(vehicles):
             vehicle["volumeCapacity"]["value"])
         vehicle_data["vehicle_weight_capacities"].append(
             vehicle["weightCapacity"]["value"])
-        speed_hack = 20
         vehicle_data["vessel_speeds"].append(
-            vehicle["vehicleSpeed"]["value"] / speed_hack)
+            vehicle["vehicleSpeed"]["value"])
         empty_draft = calc_empty_draft(vehicle)
         logger.info(f"vehicle ind: {ind}, empty_draft: {empty_draft}")
         vehicle_data["vessel_empty_draft"].append(

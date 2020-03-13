@@ -271,7 +271,7 @@ def create_data_model(vehicles, requirements, costMatrix, distanceMatrix, routin
     data["distance_matrix"] = new_dist
     data["volume_demands"] = volume_demands
     data["weight_demands"] = weight_demands
-    data["draft_demands"] = draft_demands
+    # data["draft_demands"] = draft_demands
 
     logger.debug("volume_demands")
     logger.debug(data["volume_demands"])

@@ -4,32 +4,52 @@ from ortools.constraint_solver import routing_enums_pb2
 from ortools.constraint_solver import pywrapcp
 
 from app.utils.routing_solver_utils import get_solution, dedummify
+from app.resolvers.optimizer_parameters import parameters as p
+
+from app.logger import logger
 
 
 class Optimizer:
-    def __init__(self, first_solution_strategy, local_search_metaheuristic, solution_limit):
+    def __init__(self,
+                 first_solution_strategy,
+                 local_search_metaheuristic,
+                 time_limit,
+                 solution_limit):
         self.set_first_solution_strategy(first_solution_strategy)
         self.set_local_search_metaheuristic(local_search_metaheuristic)
+        self.time_limit = time_limit
         self.solution_limit = solution_limit
 
     def set_first_solution_strategy(self, first_solution_strategy):
         if not first_solution_strategy:
-            print("using automatic as first solution strategy")
+            logger.info("using automatic as first solution strategy")
             self.first_solution_strategy = routing_enums_pb2.FirstSolutionStrategy.AUTOMATIC
         elif first_solution_strategy.lower() == "automatic":
-            print("using automatic as first solution strategy")
+            logger.info("using automatic as first solution strategy")
             self.first_solution_strategy = routing_enums_pb2.FirstSolutionStrategy.AUTOMATIC
         elif first_solution_strategy.lower() == "parallel_cheapest_insertion":
-            print("using parallel cheapest insertion as first solution strategy")
+            logger.info(
+                "using parallel cheapest insertion as first solution strategy")
             self.first_solution_strategy = routing_enums_pb2.FirstSolutionStrategy.PARALLEL_CHEAPEST_INSERTION
         elif first_solution_strategy.lower() == "path_most_constrained_arc":
-            print("using path most constrained arc as first solution strategy")
+            logger.info(
+                "using path most constrained arc as first solution strategy")
             self.first_solution_strategy = routing_enums_pb2.FirstSolutionStrategy.PATH_MOST_CONSTRAINED_ARC
         elif first_solution_strategy.lower() == "path_cheapest_arc":
-            print("using path cheapest arc as first solution strategy")
+            logger.info("using path cheapest arc as first solution strategy")
             self.first_solution_strategy = routing_enums_pb2.FirstSolutionStrategy.PATH_CHEAPEST_ARC
+        elif first_solution_strategy.lower() == "global_cheapest_arc":
+            logger.info(
+                "using global cheapest arc as first solution strategy")
+            self.first_solution_strategy = routing_enums_pb2.FirstSolutionStrategy.GLOBAL_CHEAPEST_ARC
+        elif first_solution_strategy.lower() == "sweep":
+            logger.info("using sweep as first solution strategy")
+            self.first_solution_strategy = routing_enums_pb2.FirstSolutionStrategy.SWEEP
+        elif first_solution_strategy.lower() == "christofides":
+            logger.info("using christofides as first solution strategy")
+            self.first_solution_strategy = routing_enums_pb2.FirstSolutionStrategy.CHRISTOFIDES
         else:
-            print(
+            logger.info(
                 f"{first_solution_strategy} is not a valid first solution strategy, defaulting to AUTOMATIC")
             self.first_solution_strategy = routing_enums_pb2.FirstSolutionStrategy.AUTOMATIC
 
@@ -38,16 +58,18 @@ class Optimizer:
 
             self.local_search_metaheuristic = routing_enums_pb2.LocalSearchMetaheuristic.GREEDY_DESCENT
         elif local_search_metaheuristic.lower() == "greedy_descent":
-            print("using local search metaheuristic: greedy descent")
+            logger.info(
+                "using local search metaheuristic: greedy descent")
             self.local_search_metaheuristic = routing_enums_pb2.LocalSearchMetaheuristic.GREEDY_DESCENT
         elif local_search_metaheuristic.lower() == "tabu_search":
-            print("using local search metaheuristic: tabu search")
+            logger.info("using local search metaheuristic: tabu search")
             self.local_search_metaheuristic = routing_enums_pb2.LocalSearchMetaheuristic.TABU_SEARCH
         elif local_search_metaheuristic == "simulated_annealing":
-            print("using local search metaheuristic: simulated_annealing")
+            logger.info(
+                "using local search metaheuristic: simulated_annealing")
             self.local_search_metaheuristic = routing_enums_pb2.LocalSearchMetaheuristic.SIMULATED_ANNEALING
         else:
-            print(
+            logger.info(
                 f"{local_search_metaheuristic} is not a valid local search metaheuristic, defaulting to GREEDY_DESCENT")
             self.local_search_metaheuristic = routing_enums_pb2.LocalSearchMetaheuristic.GREEDY_DESCENT
 
@@ -101,15 +123,7 @@ class Optimizer:
 
                 # cargo_capacity = dwt - NON_CARGO_WEIGHT
                 # cargo_capacity_unused = cargo_capacity - cargo_on_board
-                centimeter_change_in_draft = cargo / immersion_summer
-
-                # This does not work because call back is called many times
-                # if vehicle_ind not in self.vessel_draft_set:
-                #     centimeter_change_in_draft += data["vessel_empty_draft"][vehicle_ind]
-                #     self.vessel_draft_set[vehicle_ind] = True
-
-                # print(
-                # f"vehicle_ind: {vehicle_ind}: change in draft: {centimeter_change_in_draft}")
+                centimeter_change_in_draft = cargo / immersion_summer * 0.01
 
                 return centimeter_change_in_draft
             return draft_callback
@@ -120,7 +134,7 @@ class Optimizer:
                 to_node = manager.IndexToNode(to_index)
                 cargo = data["draft_demands"][to_node]
                 immersion_summer = data["immersion_summer"][vehicle_ind]
-                centimeter_change_in_draft = cargo / immersion_summer
+                centimeter_change_in_draft = cargo / immersion_summer * 0.01
 
                 return centimeter_change_in_draft
             return draft_callback
@@ -190,18 +204,18 @@ class Optimizer:
 
         routing.AddDimensionWithVehicleTransits(
             transit_callback_indexes,
-            10,
-            10000,
-            False,
+            p.time_slack,
+            p.time_capacity,
+            p.time_fix_cumul_to_zero,
             time_for_vehicles)
 
         cost_for_vehicles = "cost_for_vehicles"
 
         routing.AddDimensionWithVehicleTransits(
             transit_callback_cost_indexes,
-            0,
-            10000,
-            False,
+            p.cost_slack,
+            p.cost_capacity,
+            p.cost_fix_cumul_to_zero,
             cost_for_vehicles
         )
 
@@ -212,9 +226,9 @@ class Optimizer:
             draft_for_vehicles = "draft_for_vehicles"
             routing.AddDimensionWithVehicleTransits(
                 transit_callback_draft_indexes,
-                0,
-                1000,  # sets max draft any vessel can have
-                True,
+                p.draft_slack,
+                p.draft_capacity,  # sets max draft any vessel can have
+                p.draft_fix_cumul_to_zero,
                 draft_for_vehicles
             )
 
@@ -222,9 +236,9 @@ class Optimizer:
 
             routing.AddDimensionWithVehicleTransits(
                 transit_callback_draft_2_indexes,
-                0,
-                1000,  # sets max draft any vessel can have
-                True,
+                p.draft_slack,
+                p.draft_capacity,  # sets max draft any vessel can have
+                p.draft_fix_cumul_to_zero,
                 draft_for_vehicles_2
             )
 
@@ -237,9 +251,9 @@ class Optimizer:
 
         routing.AddDimensionWithVehicleCapacity(
             volume_demand_callback_index,
-            0,  # null capacity slack
+            p.volume_slack,  # null capacity slack
             data['vehicle_volume_capacities'],  # vehicle maximum capacities
-            True,  # start cumul to zero
+            p.volume_fix_cumul_to_zero,  # start cumul to zero
             "volume")
 
         weight_demand_callback_index = routing.RegisterUnaryTransitCallback(
@@ -247,9 +261,9 @@ class Optimizer:
 
         routing.AddDimensionWithVehicleCapacity(
             weight_demand_callback_index,
-            0,  # null capacity slack
+            p.weight_slack,  # null capacity slack
             data['vehicle_weight_capacities'],  # vehicle maximum capacities
-            True,  # start cumul to zero
+            p.weight_fix_cumul_to_zero,  # start cumul to zero
             "weight")
 
         weight_dimension = routing.GetDimensionOrDie("weight")
@@ -302,7 +316,8 @@ class Optimizer:
 
         # This allows for incomplete solutuon,
         for node in range(1, len(data['distance_matrix'])):
-            routing.AddDisjunction([manager.NodeToIndex(node)], 1000)
+            routing.AddDisjunction(
+                [manager.NodeToIndex(node)], p.punishment_for_missing_cargo)
 
         # Just testing minStart and minEnd
 
@@ -336,7 +351,7 @@ class Optimizer:
         search_parameters.first_solution_strategy = (
             self.first_solution_strategy
         )
-        # search_parameters.time_limit.seconds = 90
+        search_parameters.time_limit.seconds = self.time_limit
         # we can set a limit, but it won't guarantee to find a solution!
         # if time expires before we find first solution
         # we get nothing back
@@ -345,8 +360,6 @@ class Optimizer:
         search_parameters.local_search_metaheuristic = (
             self.local_search_metaheuristic
         )
-
-        # search_parameters.time_limit.seconds = None
 
         search_parameters.log_search = True
 
@@ -359,5 +372,5 @@ class Optimizer:
 
             return {"solution": solution, "d_solution": d_solution}
         else:
-            print("NO SOLUTION FOUND!!!")
+            logger.error("NO SOLUTION FOUND!!!")
             return None

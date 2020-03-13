@@ -5,6 +5,9 @@ import random as rn
 
 from app.resolvers.optimizer_types import Cargo
 
+import json
+from app.logger import logger
+
 
 def buildDistanceMatrix(raw_distances, ports):
     # id: ID!

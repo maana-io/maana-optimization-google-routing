@@ -142,6 +142,7 @@ def resolve_routing_solver(*_, vehicles, requirements, costMatrix, distanceMatri
 
         optimizer = Optimizer(objective["firstSolutionStrategy"]["id"],
                               objective["localSearchStrategy"]["id"],
+                              objective["timeLimit"],
                               objective["solutionLimit"]
                               )
 

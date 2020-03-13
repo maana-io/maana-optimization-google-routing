@@ -10,9 +10,14 @@ from app.logger import logger
 
 
 class Optimizer:
-    def __init__(self, first_solution_strategy, local_search_metaheuristic, solution_limit):
+    def __init__(self,
+                 first_solution_strategy,
+                 local_search_metaheuristic,
+                 time_limit,
+                 solution_limit):
         self.set_first_solution_strategy(first_solution_strategy)
         self.set_local_search_metaheuristic(local_search_metaheuristic)
+        self.time_limit = time_limit
         self.solution_limit = solution_limit
 
     def set_first_solution_strategy(self, first_solution_strategy):
@@ -346,7 +351,7 @@ class Optimizer:
         search_parameters.first_solution_strategy = (
             self.first_solution_strategy
         )
-        # search_parameters.time_limit.seconds = 90
+        search_parameters.time_limit.seconds = self.time_limit
         # we can set a limit, but it won't guarantee to find a solution!
         # if time expires before we find first solution
         # we get nothing back
@@ -355,8 +360,6 @@ class Optimizer:
         search_parameters.local_search_metaheuristic = (
             self.local_search_metaheuristic
         )
-
-        # search_parameters.time_limit.seconds = None
 
         search_parameters.log_search = True
 

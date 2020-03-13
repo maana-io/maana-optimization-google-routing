@@ -229,8 +229,8 @@ def add_port_to_allowed_vehicles(cargos_json,
             )
 
         else:
-            vehicle_ids = cargo["candiateVehicles"]
-            vehicle_inds = [vehicle_id_to_ind[id] for id in vehicle_ids]
+            vehicles = cargo["candiateVehicles"]
+            vehicle_inds = [vehicle_id_to_ind[v["id"]] for v in vehicles]
             port_to_allowed_vehicles.append(
                 {"port": origin_port_ind, "vehicles": vehicle_inds})
             port_to_allowed_vehicles.append(
@@ -349,8 +349,8 @@ def create_data_model(vehicles, requirements, costMatrix, distanceMatrix, routin
         cargo_node_ind_start
     )
 
-    print("port_to_allowed_vehicles")
-    print(data["port_to_allowed_vehicles"])
+    logger.debug("port_to_allowed_vehicles")
+    logger.debug(data["port_to_allowed_vehicles"])
 
     draft_data = add_port_draft(cargos_json, port_to_ind)
     data.update(draft_data)

@@ -150,11 +150,7 @@ def resolve_routing_solver(*_, vehicles, requirements, costMatrix, distanceMatri
 
         raw_solution = optimizer.optimize(data, manager, routing)
 
-<<<<<<< HEAD
-    temp = raw_solution["d_solution"]
-=======
         save_data_to_file(raw_solution["d_solution"], "solution")
->>>>>>> feature-random-optimizer
 
         return raw_solution["d_solution"]
 

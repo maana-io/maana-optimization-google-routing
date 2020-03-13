@@ -227,7 +227,7 @@ input AddRequirementToTransportInput {
   loadWindow: ID
   unloadWindow: ID
   revenue: Float
-  candiateVehicles: [ID]
+  candiateVehicles: [VehicleAsInput]
 }
 
 
@@ -2689,7 +2689,7 @@ type RequirementToTransport {
   loadWindow: LoadWindow
   unloadWindow: UnLoadWindow
   revenue: Float
-  candiateVehicles: [String]
+  candiateVehicles: [Vehicle]
 }
 
 input RequirementToTransportAsInput {
@@ -2700,7 +2700,7 @@ input RequirementToTransportAsInput {
   loadWindow: LoadWindowAsInput
   unloadWindow: UnLoadWindowAsInput
   revenue: Float
-  candiateVehicles: [String]
+  candiateVehicles: [VehicleAsInput]
 }
 
 type RouteNode {
@@ -3031,7 +3031,7 @@ input UpdateRequirementToTransportInput {
   loadWindow: ID
   unloadWindow: ID
   revenue: Float
-  candiateVehicles: [ID]
+  candiateVehicles: [VehicleAsInput]
 }
 
 

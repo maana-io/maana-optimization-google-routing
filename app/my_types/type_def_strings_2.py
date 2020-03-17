@@ -2741,6 +2741,7 @@ type RoutingSolution {
   notDeliveredRequirementIds: [String]
   notUsedVehicleIds: [String]
   vehicleSchedules: [VehicleSchedule]
+  status: String
 }
 
 type Row {

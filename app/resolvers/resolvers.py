@@ -133,6 +133,7 @@ def resolve_routing_solver(*_, vehicles, requirements, costMatrix, distanceMatri
         logger.info(f"using random optimizer")
         solution = random_optimizer_wrapper(
             requirements, vehicles, costMatrix, distanceMatrix, n_iterations)
+        save_data_to_file(solution, "random_optimizer_solution")
 
     else:
 

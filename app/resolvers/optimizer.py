@@ -365,12 +365,38 @@ class Optimizer:
 
         assignment = routing.SolveWithParameters(search_parameters)
 
+        status_map = {0: "ROUTING_NOT_SOLVED",
+                      1: "ROUTING_SUCCESS",
+                      2: "ROUTING_FAIL",
+                      3: "ROUTING_FAIL_TIMEOUT",
+                      4: "ROUTING_INVALID",
+                      }
+
+        status = routing.status()
+
         if assignment:
             solution = get_solution(data, manager, routing, assignment)
-            d_solution = dedummify(
-                solution, data["dummy_to_ind"], data["ind_to_port"], data["starting_locations"])
+            d_solution = dedummify(solution,
+                                   data["dummy_to_ind"],
+                                   data["ind_to_port"],
+                                   data["starting_locations"]
+                                   )
+            d_solution["status"] = status_map[status]
 
             return {"solution": solution, "d_solution": d_solution}
         else:
-            logger.error("NO SOLUTION FOUND!!!")
-            return None
+            logger.warn(f"solver did not succeed status: {status}")
+
+            none_solution = {'vehicleSchedules': None,
+                             'id': "none-solution",
+                             'totalTime': None,
+                             'totalVolume': None,
+                             'totalCost': None,
+                             'totalProfit': None,
+                             'notDeliveredRequirementIds': None,
+                             'notUsedVehicleIds': None,
+                             'timeWindow': None,
+                             'status': status_map[status]
+                             }
+
+            return {"d_solution": none_solution}

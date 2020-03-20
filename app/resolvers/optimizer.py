@@ -329,9 +329,9 @@ class Optimizer:
 
         # end testing minStart and min End
 
-        # for pv in data["port_to_allowed_vehicles"]:
-        #     index = manager.NodeToIndex(pv["port"])
-        #     routing.VehicleVar(index).SetValues([-1] + pv["vehicles"])
+        for pv in data["port_to_allowed_vehicles"]:
+            index = manager.NodeToIndex(pv["port"])
+            routing.VehicleVar(index).SetValues([-1] + pv["vehicles"])
 
         # for ind, start_time in enumerate(data["vehicle_starting_time"]):
         #     index = routing.Start(ind)

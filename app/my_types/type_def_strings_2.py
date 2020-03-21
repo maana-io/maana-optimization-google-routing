@@ -1500,7 +1500,15 @@ type Query {
         routingTimeWindow: RoutingTimeWindowAsInput
         ): RoutingSolution
   
-
+  routingSolverMakeSchedulesWithBRMaxProfit(
+        vehicles: [VehicleAsInput],
+        requirements: [RequirementToTransportAsInput], 
+        costMatrix: CostMatricesAsInput,
+        distanceMatrix: DistanceMatrixAsInput,
+        objective: ObjectiveAsInput,
+        routingTimeWindow: RoutingTimeWindowAsInput
+        ): RoutingSolution
+  
 
   allRealLinearConstraints(
     

@@ -54,6 +54,7 @@ def add_dummy_entry(data: List[List[int]], n: int) -> (List[List[int]], int):
 
 
 def dummify(matrix, draft_dummy_cargos, original_cargos):
+
     dummy_to_ind = {x: x for x in range(len(matrix))}
     volume_demands = {x: 0 for x in range(len(matrix))}
     weight_demands = {x: 0 for x in range(len(matrix))}
@@ -83,6 +84,8 @@ def dummify(matrix, draft_dummy_cargos, original_cargos):
             {"load_window": (cargo.laycanFrom, cargo.laycanTo),
              "dropoff_window": (cargo.dischargeDateFrom, cargo.dischargeDateTo)})
 
+    actual_pickup_deliveries = []
+
     for cargo in original_cargos:
         matrix, new_ind_origin = add_dummy_entry(matrix, cargo.origin)
         dummy_to_ind[new_ind_origin] = cargo.origin
@@ -96,6 +99,8 @@ def dummify(matrix, draft_dummy_cargos, original_cargos):
         draft_demands[new_ind_dest] = -cargo.weight
 
         pickup_deliveries.append((new_ind_origin, new_ind_dest))
+        actual_pickup_deliveries.append(
+            (new_ind_origin, new_ind_dest, cargo.revenue))
         time_windows.append(
             {"load_window": (cargo.laycanFrom, cargo.laycanTo),
              "dropoff_window": (cargo.dischargeDateFrom, cargo.dischargeDateTo)})
@@ -103,7 +108,7 @@ def dummify(matrix, draft_dummy_cargos, original_cargos):
     # matrix, new_ind_origin = add_dummy_entry(matrix, 0)
     # matrix, new_ind_origin = add_dummy_entry(matrix, 0)
 
-    return matrix, dummy_to_ind, volume_demands, weight_demands, draft_demands, pickup_deliveries, time_windows
+    return matrix, dummy_to_ind, volume_demands, weight_demands, draft_demands, pickup_deliveries, time_windows, actual_pickup_deliveries
 
 
 def dedummify(schedule, dummy_to_ind, ind_to_port, starting_locations):

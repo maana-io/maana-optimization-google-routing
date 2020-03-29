@@ -302,8 +302,8 @@ def create_data_model_with_br_max_profit(vehicles, requirements, costMatrix, dis
     data["cargo_ind_to_revenue"] = {
         ind: c.revenue for ind, c in enumerate(draft_dummy_cargos + original_cargos)}
 
-    data["dest_ind_to_revenue"] = {
-        c.destination: int(c.revenue) for c in original_cargos}
+    data["cargo_to_revenue"] = [
+        ((c.origin, c.destination), int(c.revenue)) for c in original_cargos]
 
     data["original_cargo_id_to_ind"] = {c.id:
                                         len(draft_dummy_cargos) + i for i, c in enumerate(original_cargos)}
@@ -317,7 +317,11 @@ def create_data_model_with_br_max_profit(vehicles, requirements, costMatrix, dis
     temp = dummify(data["distance_matrix"],
                    draft_dummy_cargos, original_cargos)
 
-    new_dist, dummy_to_ind, volume_demands, weight_demands, draft_demands, pickups_deliveries, time_windows = temp
+    new_dist, dummy_to_ind, volume_demands, weight_demands, draft_demands, pickups_deliveries, time_windows, actual_pickup_deliveries = temp
+
+    logger.debug(f"actual_pickup_deliveries: {actual_pickup_deliveries}")
+    data["actual_pickup_deliveries"] = actual_pickup_deliveries
+
     n = len(data["distance_matrix"])
     draft_dummy_inds_to_zero_out = range(
         n + 1, n + 2 * len(draft_dummy_cargos), 2)

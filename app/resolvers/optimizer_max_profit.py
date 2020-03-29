@@ -315,24 +315,53 @@ class OptimizerMaxProfit:
                 start_dropoff, end_dropoff - dropoff_time)
 
         # This allows for incomplete solutuon,
-        for node in range(1, len(data['distance_matrix'])):
-            routing.AddDisjunction(
-                [manager.NodeToIndex(node)], p.punishment_for_missing_cargo)
+        # for node in range(1, len(data['distance_matrix'])):
+        #     routing.AddDisjunction(
+        #         [manager.NodeToIndex(node)], p.punishment_for_missing_cargo)
 
-        for node, revenue in data["dest_ind_to_revenue"].items():
+        print("cargo_to_revenue: {}".format(data["cargo_to_revenue"]))
+        print("dummy_to_ind: {}".format(data["dummy_to_ind"]))
+
+        from collections import defaultdict
+
+        d = defaultdict(list)
+
+        for dummy, ind in data["dummy_to_ind"].items():
+            d[ind].append(dummy)
+
+        print(f"ind_to_dummys: {d}")
+
+        # for cargo, revenue in data["cargo_to_revenue"]:
+        #     origin, destination = cargo
+        #     for dummy_ind in d[destination]:
+        #         routing.AddDisjunction(
+        #             [manager.NodeToIndex(dummy_ind)], revenue
+        #         )
+
+        #     for dummy_ind in d[origin]:
+        #         routing.AddDisjunction(
+        #             [manager.NodeToIndex(dummy_ind)], 0
+        #         )
+
+        for origin, destination, revenue in data["actual_pickup_deliveries"]:
+
             routing.AddDisjunction(
-                [manager.NodeToIndex(node)], revenue
+                [manager.NodeToIndex(destination)], int(revenue)
             )
 
-        # Just testing minStart and minEnd
+            routing.AddDisjunction(
+                [manager.NodeToIndex(origin)], 0
+            )
 
-        # It looks like it is working
+            # Just testing minStart and minEnd
 
-        # vehicle_index = routing.Start(0)
-        # time_dimension.CumulVar(vehicle_index).SetRange(0, 20)
-        # routing.AddToAssignment(time_dimension.SlackVar(vehicle_index))
+            # It looks like it is working
 
-        # end testing minStart and min End
+            # vehicle_index = routing.Start(0)
+            # time_dimension.CumulVar(vehicle_index).SetRange(0, 20)
+            # routing.AddToAssignment(time_dimension.SlackVar(vehicle_index))
+
+            # end testing minStart and min End
 
         for pv in data["port_to_allowed_vehicles"]:
             index = manager.NodeToIndex(pv["port"])

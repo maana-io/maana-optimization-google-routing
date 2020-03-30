@@ -9,7 +9,7 @@ from app.resolvers.optimizer_parameters import parameters as p
 from app.logger import logger
 
 
-class Optimizer:
+class OptimizerMaxProfit:
     def __init__(self,
                  first_solution_strategy,
                  local_search_metaheuristic,
@@ -318,6 +318,11 @@ class Optimizer:
         for node in range(1, len(data['distance_matrix'])):
             routing.AddDisjunction(
                 [manager.NodeToIndex(node)], p.punishment_for_missing_cargo)
+
+        for node, revenue in data["dest_ind_to_revenue"].items():
+            routing.AddDisjunction(
+                [manager.NodeToIndex(node)], revenue
+            )
 
         # Just testing minStart and minEnd
 

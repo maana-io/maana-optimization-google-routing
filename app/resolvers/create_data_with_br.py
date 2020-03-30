@@ -220,7 +220,7 @@ def add_port_to_allowed_vehicles(cargos_json,
     for cargo, origin_dest in zip(cargos_json, cargo_inds):
         origin_port_ind, destination_port_ind = origin_dest
 
-        if "candiateVehicles" not in cargo:
+        if "candiateVehicles" not in cargo or not cargo["candiateVehicles"]:
 
             port_to_allowed_vehicles.append(
                 {"port": origin_port_ind, "vehicles": []})
@@ -240,7 +240,7 @@ def add_port_to_allowed_vehicles(cargos_json,
     return port_to_allowed_vehicles
 
 
-def create_data_model(vehicles, requirements, costMatrix, distanceMatrix, routingTimeWindow):
+def create_data_model_with_br(vehicles, requirements, costMatrix, distanceMatrix, routingTimeWindow):
     """Stores the data for the problem."""
 
     vehicles_json = vehicles

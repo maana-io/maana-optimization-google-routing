@@ -227,7 +227,7 @@ input AddRequirementToTransportInput {
   loadWindow: ID
   unloadWindow: ID
   revenue: Float
-  candiateVehicles: [ID]
+  candiateVehicles: [VehicleAsInput]
 }
 
 
@@ -1491,6 +1491,25 @@ type Query {
         routingTimeWindow: RoutingTimeWindowAsInput
         ): RoutingSolution
   
+ routingSolverMakeSchedulesWithBR(
+        vehicles: [VehicleAsInput],
+        requirements: [RequirementToTransportAsInput], 
+        costMatrix: CostMatricesAsInput,
+        distanceMatrix: DistanceMatrixAsInput,
+        objective: ObjectiveAsInput,
+        routingTimeWindow: RoutingTimeWindowAsInput
+        ): RoutingSolution
+  
+  routingSolverMakeSchedulesWithBRMaxProfit(
+        vehicles: [VehicleAsInput],
+        requirements: [RequirementToTransportAsInput], 
+        costMatrix: CostMatricesAsInput,
+        distanceMatrix: DistanceMatrixAsInput,
+        objective: ObjectiveAsInput,
+        routingTimeWindow: RoutingTimeWindowAsInput
+        ): RoutingSolution
+  
+
   allRealLinearConstraints(
     
     take: Int = 1000
@@ -2689,7 +2708,7 @@ type RequirementToTransport {
   loadWindow: LoadWindow
   unloadWindow: UnLoadWindow
   revenue: Float
-  candiateVehicles: [String]
+  candiateVehicles: [Vehicle]
 }
 
 input RequirementToTransportAsInput {
@@ -2700,7 +2719,7 @@ input RequirementToTransportAsInput {
   loadWindow: LoadWindowAsInput
   unloadWindow: UnLoadWindowAsInput
   revenue: Float
-  candiateVehicles: [String]
+  candiateVehicles: [VehicleAsInput]
 }
 
 type RouteNode {
@@ -2741,6 +2760,7 @@ type RoutingSolution {
   notDeliveredRequirementIds: [String]
   notUsedVehicleIds: [String]
   vehicleSchedules: [VehicleSchedule]
+  status: String
 }
 
 type Row {
@@ -3031,7 +3051,7 @@ input UpdateRequirementToTransportInput {
   loadWindow: ID
   unloadWindow: ID
   revenue: Float
-  candiateVehicles: [ID]
+  candiateVehicles: [VehicleAsInput]
 }
 
 

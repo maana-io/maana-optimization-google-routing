@@ -13,7 +13,9 @@ import os
 
 from app.my_types.type_def_strings_2 import optimizer_types
 from app.resolvers.resolvers import resolve_pickups_and_deliveries_mapper, \
-    resolve_routing_solver_mapper
+    resolve_routing_solver_mapper, \
+    resolve_routing_solver_with_br_mapper, \
+    resolve_routing_solver_with_br_max_profit_mapper
 
 
 # Load environment variables
@@ -25,6 +27,8 @@ query = QueryType()
 
 # resolve_pickups_and_deliveries_mapper(query)
 resolve_routing_solver_mapper(query)
+resolve_routing_solver_with_br_mapper(query)
+resolve_routing_solver_with_br_max_profit_mapper(query)
 
 # Create executable GraphQL schema
 schema = make_executable_schema(type_defs, [query])

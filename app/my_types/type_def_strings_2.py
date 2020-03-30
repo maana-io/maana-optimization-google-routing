@@ -1491,6 +1491,25 @@ type Query {
         routingTimeWindow: RoutingTimeWindowAsInput
         ): RoutingSolution
   
+ routingSolverMakeSchedulesWithBR(
+        vehicles: [VehicleAsInput],
+        requirements: [RequirementToTransportAsInput], 
+        costMatrix: CostMatricesAsInput,
+        distanceMatrix: DistanceMatrixAsInput,
+        objective: ObjectiveAsInput,
+        routingTimeWindow: RoutingTimeWindowAsInput
+        ): RoutingSolution
+  
+  routingSolverMakeSchedulesWithBRMaxProfit(
+        vehicles: [VehicleAsInput],
+        requirements: [RequirementToTransportAsInput], 
+        costMatrix: CostMatricesAsInput,
+        distanceMatrix: DistanceMatrixAsInput,
+        objective: ObjectiveAsInput,
+        routingTimeWindow: RoutingTimeWindowAsInput
+        ): RoutingSolution
+  
+
   allRealLinearConstraints(
     
     take: Int = 1000
@@ -2741,6 +2760,7 @@ type RoutingSolution {
   notDeliveredRequirementIds: [String]
   notUsedVehicleIds: [String]
   vehicleSchedules: [VehicleSchedule]
+  status: String
 }
 
 type Row {

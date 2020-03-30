@@ -6,8 +6,11 @@ from ortools.linear_solver import pywraplp
 from ortools.sat.python import cp_model
 
 from app.resolvers.optimizer import Optimizer
+from app.resolvers.optimizer_max_profit import OptimizerMaxProfit
 from app.resolvers.random_optimizer import random_optimizer_wrapper
 from app.resolvers.create_data import create_data_model
+from app.resolvers.create_data_with_br import create_data_model_with_br
+from app.resolvers.create_data_with_br_max_profit import create_data_model_with_br_max_profit
 from app.utils.helpers import save_data_to_file
 
 # import logging
@@ -133,6 +136,7 @@ def resolve_routing_solver(*_, vehicles, requirements, costMatrix, distanceMatri
         logger.info(f"using random optimizer")
         solution = random_optimizer_wrapper(
             requirements, vehicles, costMatrix, distanceMatrix, n_iterations)
+        save_data_to_file(solution, "random_optimizer_solution")
 
     else:
 
@@ -157,3 +161,105 @@ def resolve_routing_solver(*_, vehicles, requirements, costMatrix, distanceMatri
 
 def resolve_routing_solver_mapper(query):
     query.set_field("routingSolverMakeSchedules", resolve_routing_solver)
+
+
+def resolve_routing_solver_with_br(*_, vehicles, requirements, costMatrix, distanceMatrix, objective, routingTimeWindow):
+
+    save_data_to_file(vehicles, "vehicles")
+    save_data_to_file(requirements, "requirements")
+    save_data_to_file(costMatrix, "cost_matrix")
+    save_data_to_file(distanceMatrix, "distanceMatrix")
+    save_data_to_file(objective, "objective")
+
+    report = {"n_vehicles": len(vehicles),
+              "n_requirements": len(requirements)
+              }
+
+    save_data_to_file(report, "report")
+
+    data = create_data_model_with_br(vehicles, requirements,
+                                     costMatrix, distanceMatrix, routingTimeWindow)
+
+    if "randomOptimizer" in objective["firstSolutionStrategy"]["id"]:
+        n_iterations = int(
+            objective["firstSolutionStrategy"]["id"].split("_")[1])
+        logger.info(f"using random optimizer")
+        solution = random_optimizer_wrapper(
+            requirements, vehicles, costMatrix, distanceMatrix, n_iterations)
+        save_data_to_file(solution, "random_optimizer_solution")
+
+    else:
+
+        manager = pywrapcp.RoutingIndexManager(
+            len(data['distance_matrix']
+                ), data['num_vehicles'], data["starts"], data["ends"])
+
+        optimizer = Optimizer(objective["firstSolutionStrategy"]["id"],
+                              objective["localSearchStrategy"]["id"],
+                              objective["timeLimit"],
+                              objective["solutionLimit"]
+                              )
+
+        routing = pywrapcp.RoutingModel(manager)
+
+        raw_solution = optimizer.optimize(data, manager, routing)
+
+        save_data_to_file(raw_solution["d_solution"], "solution")
+
+        return raw_solution["d_solution"]
+
+
+def resolve_routing_solver_with_br_mapper(query):
+    query.set_field("routingSolverMakeSchedulesWithBR",
+                    resolve_routing_solver_with_br)
+
+
+def resolve_routing_solver_with_br_max_profit(*_, vehicles, requirements, costMatrix, distanceMatrix, objective, routingTimeWindow):
+
+    save_data_to_file(vehicles, "vehicles")
+    save_data_to_file(requirements, "requirements")
+    save_data_to_file(costMatrix, "cost_matrix")
+    save_data_to_file(distanceMatrix, "distanceMatrix")
+    save_data_to_file(objective, "objective")
+
+    report = {"n_vehicles": len(vehicles),
+              "n_requirements": len(requirements)
+              }
+
+    save_data_to_file(report, "report")
+
+    data = create_data_model_with_br_max_profit(vehicles, requirements,
+                                                costMatrix, distanceMatrix, routingTimeWindow)
+
+    if "randomOptimizer" in objective["firstSolutionStrategy"]["id"]:
+        n_iterations = int(
+            objective["firstSolutionStrategy"]["id"].split("_")[1])
+        logger.info(f"using random optimizer")
+        solution = random_optimizer_wrapper(
+            requirements, vehicles, costMatrix, distanceMatrix, n_iterations)
+        save_data_to_file(solution, "random_optimizer_solution")
+
+    else:
+
+        manager = pywrapcp.RoutingIndexManager(
+            len(data['distance_matrix']
+                ), data['num_vehicles'], data["starts"], data["ends"])
+
+        optimizer = OptimizerMaxProfit(objective["firstSolutionStrategy"]["id"],
+                                       objective["localSearchStrategy"]["id"],
+                                       objective["timeLimit"],
+                                       objective["solutionLimit"]
+                                       )
+
+        routing = pywrapcp.RoutingModel(manager)
+
+        raw_solution = optimizer.optimize(data, manager, routing)
+
+        save_data_to_file(raw_solution["d_solution"], "solution")
+
+        return raw_solution["d_solution"]
+
+
+def resolve_routing_solver_with_br_max_profit_mapper(query):
+    query.set_field("routingSolverMakeSchedulesWithBRMaxProfit",
+                    resolve_routing_solver_with_br_max_profit)

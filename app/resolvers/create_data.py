@@ -153,7 +153,7 @@ def modify_cargo_ports(cargos, port_to_ind):
     return cargos
 
 
-def add_port_draft(cargos_json, port_to_ind):
+def add_port_draft(cargos_json, vehicles_json, port_to_ind):
 
     port_draft_max = {}
 
@@ -171,7 +171,22 @@ def add_port_draft(cargos_json, port_to_ind):
             f"destination_port_id: {destination_port_id}, destination_port_max_depth: {destination_port_max_depth}")
         port_to_max_draft[destination_port_id] = destination_port_max_depth
 
-    logger.debug(f"port_to_max_draft: {port_to_max_draft}")
+    logger.debug(f"port_to_max_draft for cargos: {port_to_max_draft}")
+
+    for vehicle in vehicles_json:
+        starting_location_id = vehicle["startingLocation"]["id"]
+        if starting_location_id not in port_to_max_draft:
+            starting_location_max_depth = vehicle["startingLocation"]["dimension"]["depth"]["max"]
+            port_to_max_draft[starting_location_id] = starting_location_max_depth
+
+            logger.debug(
+                f"starting_location_id: {starting_location_id}, starting_location_max_depth: {starting_location_max_depth}")
+        else:
+            logger.debug(
+                f"starting_location_id is already present in port_to_max_draft")
+
+    logger.debug(
+        f"port_to_max_draft for cargos and starting locations: {port_to_max_draft}")
 
     ind_to_draft = {
         port_to_ind[port_id]: draft for port_id, draft in port_to_max_draft.items()}
@@ -192,7 +207,7 @@ def add_port_draft(cargos_json, port_to_ind):
 
     draft_data = {}
 
-    draft_data["port_max_draft_orig"] = port_to_max_draft_orig
+    draft_data["port_to_max_draft_orig"] = port_to_max_draft_orig
 
     return draft_data
 
@@ -352,14 +367,14 @@ def create_data_model(vehicles, requirements, costMatrix, distanceMatrix, routin
     logger.debug("port_to_allowed_vehicles")
     logger.debug(data["port_to_allowed_vehicles"])
 
-    draft_data = add_port_draft(cargos_json, port_to_ind)
+    draft_data = add_port_draft(cargos_json, vehicles_json, port_to_ind)
     data.update(draft_data)
 
     data["port_max_draft"] = {}
 
     for k, v in dummy_to_ind.items():
         if k > 0:
-            data["port_max_draft"][k] = data["port_max_draft_orig"][v]
+            data["port_max_draft"][k] = data["port_to_max_draft_orig"][v]
 
     # Just mocked for now
     data["load_and_dropoff_times"] = [

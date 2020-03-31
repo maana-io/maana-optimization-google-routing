@@ -1,112 +1,144 @@
+
 query{
-  routingSolverMakeSchedules(
+  routingSolverMakeSchedulesWithBRMaxProfit(
     vehicles: [{id: "vehicle_1"
                 capacity: {id: "a", value: 10},
-                volumeCapacity: {id: "b", value: 8},
-                weightCapacity: {id: "c", value: 8},
+                volumeCapacity: {id: "b", value: 80},
+                weightCapacity: {id: "c", value: 80},
                 vehicleSpeed: {id: "d", value:1},
-                vehicleDimensions: {id: "e", depth: {id: "f", empty: 6, massMultiplier: 1, max: 10}},               
-                startingLocation: {id: "city_a"}
-    
+                vehicleDimensions: {id: "e", depth: {id: "f", empty: 6, massMultiplier: 1, max: 10}},
+                # startingLocation: {id: "city_c"}
+                startingLocation: {id: "city_a", dimension:
+                                                   {id: "4", depth:
+                                                             {id: "10", max: 10}
+                                                  }
+                                        }
+
     },
-            
-   {id: "vehicle_2"
+      
+      {id: "vehicle_2"
                 capacity: {id: "a", value: 10},
                 volumeCapacity: {id: "b", value: 8},
                 weightCapacity: {id: "c", value: 8},
-                vehicleSpeed: {id: "d", value:1},
-                vehicleDimensions: {id: "e", depth: {id: "f", empty: 0, massMultiplier: 1, max: 10}},               
-                startingLocation: {id: "city_c"}
-  },
+                vehicleSpeed: {id: "d", value:10},
+                vehicleDimensions: {id: "e", depth: {id: "f", empty: 6, massMultiplier: 1, max: 10}},
+                startingLocation: {id: "city_a", dimension:
+                                                   {id: "4", depth:
+                                                             {id: "12", max: 12}
+                                                  }
+                                        }
+
+      },
+
+
       {id: "vehicle_3"
                 capacity: {id: "a", value: 20},
                 volumeCapacity: {id: "b", value: 12},
                 weightCapacity: {id: "c", value: 12},
                 vehicleSpeed: {id: "d", value:1},
-                vehicleDimensions: {id: "e", depth: {id: "f", empty: 0, massMultiplier: 1, max: 10}},               
-                startingLocation: {id: "city_a"}
+                vehicleDimensions: {id: "e", depth: {id: "f", empty: 0, massMultiplier: 1, max: 10}},
+                startingLocation: {id: "city_d", dimension:
+                                                   {id: "4", depth:
+                                                             {id: "12", max: 12}
+                                                  }
+                                        }
       }
     ],
     requirements: [{id: "cargo-1"
                     routePair: {id: "3",
                                 origin: {id: "city_a::cargo_1", dimension:
-                                                   {id: "4", depth: 
+                                                   {id: "4", depth:
                                                              {id: "10", max: 10}
                                                   }
                                         },
                                 destination: {id: "city_b::cargo_1", dimension:
-                                                   {id: "6", depth: 
+                                                   {id: "6", depth:
                                                              {id: "10", max: 10}
                                                   }
                                         },
                     },
                     volume: 2,
                     weight: 2,
-                    revenue: 100,
-                    loadWindow: {id: "7", 
+                    revenue: 10000,
+                    loadWindow: {id: "7",
                                  timeWindow: {
                                      id: "8",
                                      start: 16,
                                      end: 21
                                 }
                     },
-                    unloadWindow: {id: "9", 
+                    unloadWindow: {id: "19",
                                      timeWindow: {
-                                     id: "10",
+                                     id: "30",
                                      start: 116,
                                      end: 121
                                 }
                     },
-                    candiateVehicles: [
-                      "vehicle_1",
-                      "vehicle_2"
-                    ]
-                    
-                    
+                    candiateVehicles: [{id: "vehicle_3"
+                capacity: {id: "a", value: 20},
+                volumeCapacity: {id: "b", value: 12},
+                weightCapacity: {id: "c", value: 12},
+                vehicleSpeed: {id: "d", value:1},
+                vehicleDimensions: {id: "e", depth: {id: "f", empty: 0, massMultiplier: 1, max: 10}},
+                startingLocation: {id: "city_a"}
+      }]
+
+
     },
     {id: "cargo-2"
                     routePair: {id: "3",
-                                origin: {id: "city_a::cargo_2", dimension:
-                                                   {id: "4", depth: 
+                                origin: {id: "city_d::cargo_2", dimension:
+                                                   {id: "4", depth:
                                                              {id: "10", max: 10}
                                                   }
                                         },
-                                destination: {id: "city_d::cargo_2", dimension:
-                                                   {id: "6", depth: 
+                                destination: {id: "city_b::cargo_2", dimension:
+                                                   {id: "6", depth:
                                                              {id: "10", max: 10}
                                                   }
                                         },
                     },
                     volume: 2,
                     weight: 2,
-                    revenue: 100,
-                    loadWindow: {id: "7", 
+                    revenue: 1,
+                    loadWindow: {id: "7",
                                  timeWindow: {
                                      id: "8",
                                      start: 66,
                                      end: 73
                                 }
                     },
-                    unloadWindow: {id: "9", 
+                    unloadWindow: {id: "9",
                                      timeWindow: {
                                      id: "10",
                                      start: 166,
                                      end: 173
                                 }
                     },
-                    candiateVehicles: [
-                      "vehicle_3"
-                    ]
+                    candiateVehicles: [{id: "vehicle_2"
+                capacity: {id: "a", value: 10},
+                volumeCapacity: {id: "b", value: 8},
+                weightCapacity: {id: "c", value: 8},
+                vehicleSpeed: {id: "d", value:10},
+                vehicleDimensions: {id: "e", depth: {id: "f", empty: 6, massMultiplier: 1, max: 10}},
+                startingLocation: {id: "city_a", dimension:
+                                                   {id: "4", depth:
+                                                             {id: "12", max: 12}
+                                                  }
+                                        }
+
+      }]
+
     },
     {id: "cargo-3"
                     routePair: {id: "3",
-                                origin: {id: "city_c::cargo_3", dimension:
-                                                   {id: "4", depth: 
+                                origin: {id: "city_a::cargo_3", dimension:
+                                                   {id: "4", depth:
                                                              {id: "10", max: 10}
                                                   }
                                         },
-                                destination: {id: "city_d::cargo_3", dimension:
-                                                   {id: "6", depth: 
+                                destination: {id: "city_b::cargo_3", dimension:
+                                                   {id: "6", depth:
                                                              {id: "10", max: 10}
                                                   }
                                         },
@@ -114,14 +146,14 @@ query{
                     volume: 3,
                     weight: 3,
                     revenue: 100,
-                    loadWindow: {id: "7", 
+                    loadWindow: {id: "7",
                                  timeWindow: {
                                      id: "8",
                                      start: 79,
                                      end: 89
                                 }
                     },
-                    unloadWindow: {id: "9", 
+                    unloadWindow: {id: "9",
                                      timeWindow: {
                                      id: "10",
                                      start: 179,
@@ -129,20 +161,30 @@ query{
                                 }
                     },
                     candiateVehicles: [
-                      "vehicle_1",
-                      "vehicle_2",
-                      "vehicle_3"
+                        {id: "vehicle_2"
+                capacity: {id: "a", value: 10},
+                volumeCapacity: {id: "b", value: 8},
+                weightCapacity: {id: "c", value: 8},
+                vehicleSpeed: {id: "d", value:10},
+                vehicleDimensions: {id: "e", depth: {id: "f", empty: 6, massMultiplier: 1, max: 10}},
+                startingLocation: {id: "city_a", dimension:
+                                                   {id: "4", depth:
+                                                             {id: "12", max: 12}
+                                                  }
+                                        }
+
+      }
                     ]
     },
     {id: "cargo-4"
                     routePair: {id: "3",
                                 origin: {id: "city_a::cargo_4", dimension:
-                                                   {id: "4", depth: 
+                                                   {id: "4", depth:
                                                              {id: "10", max: 10}
                                                   }
                                         },
-                                destination: {id: "city_d::cargo_4", dimension:
-                                                   {id: "6", depth: 
+                                destination: {id: "city_b::cargo_4", dimension:
+                                                   {id: "6", depth:
                                                              {id: "10", max: 10}
                                                   }
                                         },
@@ -150,36 +192,46 @@ query{
                     volume: 2,
                     weight: 2,
                     revenue: 100,
-                    loadWindow: {id: "7", 
+                    loadWindow: {id: "7",
                                  timeWindow: {
                                      id: "8",
                                      start: 150,
                                      end: 153
                                 }
                     },
-                    unloadWindow: {id: "9", 
+                    unloadWindow: {id: "9",
                                      timeWindow: {
                                      id: "10",
                                      start: 250,
                                      end: 253
                                 }
-<<<<<<< HEAD
                     },
+                    candiateVehicles: [
+                      {id: "vehicle_2"
+                capacity: {id: "a", value: 10},
+                volumeCapacity: {id: "b", value: 8},
+                weightCapacity: {id: "c", value: 8},
+                vehicleSpeed: {id: "d", value:10},
+                vehicleDimensions: {id: "e", depth: {id: "f", empty: 6, massMultiplier: 1, max: 10}},
+                startingLocation: {id: "city_a", dimension:
+                                                   {id: "4", depth:
+                                                             {id: "12", max: 12}
+                                                  }
+                                        }
 
-    }  
-=======
-                    }
+      }
+                    ]
     },
-      
+
     {id: "cargo-5"
                     routePair: {id: "3",
-                                origin: {id: "city_b::cargo_5", dimension:
-                                                   {id: "4", depth: 
+                                origin: {id: "city_a::cargo_5", dimension:
+                                                   {id: "4", depth:
                                                              {id: "10", max: 10}
                                                   }
                                         },
-                                destination: {id: "city_d::cargo_5", dimension:
-                                                   {id: "6", depth: 
+                                destination: {id: "city_c::cargo_5", dimension:
+                                                   {id: "6", depth:
                                                              {id: "10", max: 10}
                                                   }
                                         },
@@ -187,86 +239,125 @@ query{
                     volume: 2,
                     weight: 2,
                     revenue: 100,
-                    loadWindow: {id: "7", 
+                    loadWindow: {id: "7",
                                  timeWindow: {
                                      id: "8",
                                      start: 160,
                                      end: 165
                                 }
                     },
-                    unloadWindow: {id: "9", 
+                    unloadWindow: {id: "9",
                                      timeWindow: {
                                      id: "10",
-                                     start: 160,
+                                     start: 260,
                                      end: 265
                                 }
-                    }
-    }    
->>>>>>> feature-random-optimizer
+                    },
+                    candiateVehicles: [
+                      {id: "vehicle_1"
+                capacity: {id: "a", value: 10},
+                volumeCapacity: {id: "b", value: 80},
+                weightCapacity: {id: "c", value: 80},
+                vehicleSpeed: {id: "d", value:1},
+                vehicleDimensions: {id: "e", depth: {id: "f", empty: 6, massMultiplier: 1, max: 10}},
+                # startingLocation: {id: "city_c"}
+                startingLocation: {id: "city_a", dimension:
+                                                   {id: "4", depth:
+                                                             {id: "10", max: 10}
+                                                  }
+                                        }
+
+    }
+                    ]
+    }
     ],
     costMatrix: {id: "11",
       costMatrices:
         [
     		{
-          id: "2000"       
+          id: "2000"
           rows: [{
             id: "city_a",
-            values: [0, 6, 6, 5]
+            values: [0, 6, 6, 5, 7, 7]
           },
           {
             id: "city_b",
-            values: [6, 0, 9, 9]
+            values: [6, 0, 9, 9, 8, 8]
           },
           {
             id: "city_c",
-            values: [6, 9, 0, 7]
+            values: [6, 9, 0, 7, 7, 8]
           },
           {
             id: "city_d",
-            values: [5, 9, 7, 0]
+            values: [5, 9, 7, 0, 7, 8]
+          },
+          {
+            id: "city_e",
+            values: [5, 9, 7, 7, 0, 8]
+          },
+          {
+            id: "city_f",
+            values: [5, 9, 7, 7, 9, 0]
           }
           ]
         },
         {
-          id: "2000"       
+          id: "2000"
           rows: [{
             id: "city_a",
-            values: [0, 5, 6, 5]
+            values: [0, 5, 6, 5, 7, 7]
           },
           {
             id: "city_b",
-            values: [5, 0, 9, 9]
+            values: [5, 0, 9, 9, 6, 7]
           },
           {
             id: "city_c",
-            values: [6, 9, 0, 8]
+            values: [6, 9, 0, 8, 7, 8]
           },
           {
             id: "city_d",
-            values: [5, 9, 8, 0]
+            values: [5, 9, 8, 0, 7, 8]
+          },
+          {
+            id: "city_e",
+            values: [5, 9, 8, 7, 0, 8]
+                    },
+          {
+            id: "city_f",
+            values: [5, 9, 8, 9, 7, 0]
           }
           ]
         },
         {
-          id: "2000"       
+          id: "2000"
           rows: [{
             id: "city_a",
-            values: [0, 5, 6, 5]
+            values: [0, 5, 6, 5, 8, 9]
           },
           {
             id: "city_b",
-            values: [5, 0, 9, 9]
+            values: [5, 0, 9, 9, 6, 7]
           },
           {
             id: "city_c",
-            values: [6, 9, 0, 8]
+            values: [6, 9, 0, 8, 8, 9]
           },
           {
             id: "city_d",
-            values: [5, 9, 8, 0]
+            values: [5, 9, 8, 0, 8, 9]
+          },
+          {
+            id: "city_e",
+            values: [5, 9, 8, 9, 0, 9]
+                    },
+          {
+            id: "city_f",
+            values: [5, 9, 8, 9, 8, 0]
           }
           ]
-        }  
+        }
       ]
         ,
     },
@@ -274,20 +365,30 @@ query{
       id: "17",
       rows: [{
         id: "city_a",
-        values: [0, 5, 6, 5]
+        values: [0, 5, 6, 5, 7, 8]
       },
       {
         id: "city_b",
-        values: [5, 0, 9, 9]
+        values: [5, 0, 9, 9, 7, 8]
             },
       {
         id: "city_c",
-        values: [6, 9, 0, 8]
+        values: [6, 9, 0, 8, 6, 8]
             },
       {
         id: "city_d",
-        values: [5, 9, 8, 0]
-      }]
+        values: [5, 9, 8, 0, 7, 9]
+      },
+      {
+        id: "city_e",
+        values: [5, 9, 8, 8, 0, 9]
+            },
+      {
+        id: "city_f",
+        values: [5, 9, 8, 8, 7, 0]
+      }
+      
+      ]
     },
     objective: {
       id: "22",
@@ -301,27 +402,19 @@ query{
         id: "greedy_descent"
       },
       timeLimit: 10,
-      solutionLimit: 200
+      solutionLimit: 100
     },
-<<<<<<< HEAD
-     routingTimeWindow: {
-      id: "2",
-      timeWindow: {
-        id: "1"
-        start: 1,
-=======
     routingTimeWindow: {
       id: "2",
       timeWindow: {
         id: "1"
         start: 10,
->>>>>>> feature-random-optimizer
         end: 30
       }
-      
+
     }
-    
-    
+
+
   ) {
     id
     totalVolume
@@ -354,6 +447,7 @@ query{
     totalProfit
     notDeliveredRequirementIds
     notUsedVehicleIds
-    
+
   }
 }
+

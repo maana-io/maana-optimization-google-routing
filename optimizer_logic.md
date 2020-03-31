@@ -33,6 +33,8 @@ The optimizer is technically minimizing cost in all three above mentioned resolv
 
 The solver lives in `app/resolvers/optimizer.py`.
 
+To test the vrp solver you can use example query, from: `app/sample_queries/latest_known_working_query.txt`
+
 
 
 

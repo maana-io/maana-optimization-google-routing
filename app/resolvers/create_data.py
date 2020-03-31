@@ -314,7 +314,7 @@ def create_data_model(vehicles, requirements, costMatrix, distanceMatrix, routin
     temp = dummify(data["distance_matrix"],
                    draft_dummy_cargos, original_cargos)
 
-    new_dist, dummy_to_ind, volume_demands, weight_demands, draft_demands, pickups_deliveries, time_windows = temp
+    new_dist, dummy_to_ind, volume_demands, weight_demands, draft_demands, pickups_deliveries, time_windows, _ = temp
     n = len(data["distance_matrix"])
     draft_dummy_inds_to_zero_out = range(
         n + 1, n + 2 * len(draft_dummy_cargos), 2)

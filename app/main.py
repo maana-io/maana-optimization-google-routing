@@ -11,7 +11,7 @@ import numpy as np
 from dotenv import load_dotenv
 import os
 
-from app.my_types.type_def_strings_2 import optimizer_types
+from app.my_types.type_def_strings import optimizer_types
 from app.resolvers.resolvers import resolve_pickups_and_deliveries_mapper, \
     resolve_routing_solver_mapper, \
     resolve_routing_solver_with_br_mapper, \

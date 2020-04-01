@@ -63,13 +63,6 @@ input AddConstraintInput {
 }
 
 
-input AddConstraintUnionInput {
-  id: ID
-  assignemt: ID
-  realLinear: ID
-}
-
-
 input AddCostMatricesInput {
   id: ID
   costMatrices: [ID]
@@ -116,47 +109,6 @@ input AddDistanceMatrixInput {
 input AddFirstSolutionStrategyInput {
   id: ID
 }
-
-
-input AddIntegerCoefficientVectorInput {
-  id: ID
-  value: [ID]
-}
-
-
-input AddIntegerLinearCoefficientInput {
-  id: ID
-  value: Int
-}
-
-
-input AddIntegerLinearConstraintInput {
-  id: ID
-  upperBound: Int
-  lowerBound: Int
-  coefficients: [ID]
-}
-
-
-input AddIntegerLinearObjectiveInput {
-  id: ID
-  coefficients: [ID]
-  maximize: Boolean
-}
-
-
-input AddIntVarInput {
-  id: ID
-  lowerBound: Int
-  upperBound: Int
-}
-
-
-input AddIntVarValueInput {
-  id: ID
-  value: Int
-}
-
 
 input AddLoadWindowInput {
   id: ID
@@ -683,43 +635,6 @@ input LocalSearchStrategyAsInput {
 
 type Mutation {
   
-  addRealLinearConstraint(input: AddRealLinearConstraintInput!): ID
-
-  
-  addRealLinearConstraints(input: [AddRealLinearConstraintInput]!): [ID!]!
-
-  
-  updateRealLinearConstraint(input: UpdateRealLinearConstraintInput!): ID
-
-  
-  updateRealLinearConstraints(input: [UpdateRealLinearConstraintInput]!): [ID!]!
-
-  
-  deleteRealLinearConstraint(id: ID!): RealLinearConstraint
-
-  
-  deleteRealLinearConstraints(ids: [ID!]): [RealLinearConstraint!]!
-
-  
-  addAssignementConstraintX(input: AddAssignementConstraintXInput!): ID
-
-  
-  addAssignementConstraintXs(input: [AddAssignementConstraintXInput]!): [ID!]!
-
-  
-  updateAssignementConstraintX(input: UpdateAssignementConstraintXInput!): ID
-
-  
-  updateAssignementConstraintXs(input: [UpdateAssignementConstraintXInput]!): [ID!]!
-
-  
-  deleteAssignementConstraintX(id: ID!): AssignementConstraintX
-
-  
-  deleteAssignementConstraintXs(ids: [ID!]): [AssignementConstraintX!]!
-
-  
-  addRoutingSolution(input: AddRoutingSolutionInput!): ID
 
   
   addRoutingSolutions(input: [AddRoutingSolutionInput]!): [ID!]!
@@ -755,41 +670,6 @@ type Mutation {
   deleteFirstSolutionStrategys(ids: [ID!]): [FirstSolutionStrategy!]!
 
   
-  addIntVar(input: AddIntVarInput!): ID
-
-  
-  addIntVars(input: [AddIntVarInput]!): [ID!]!
-
-  
-  updateIntVar(input: UpdateIntVarInput!): ID
-
-  
-  updateIntVars(input: [UpdateIntVarInput]!): [ID!]!
-
-  
-  deleteIntVar(id: ID!): IntVar
-
-  
-  deleteIntVars(ids: [ID!]): [IntVar!]!
-
-  
-  addIntegerLinearCoefficient(input: AddIntegerLinearCoefficientInput!): ID
-
-  
-  addIntegerLinearCoefficients(input: [AddIntegerLinearCoefficientInput]!): [ID!]!
-
-  
-  updateIntegerLinearCoefficient(input: UpdateIntegerLinearCoefficientInput!): ID
-
-  
-  updateIntegerLinearCoefficients(input: [UpdateIntegerLinearCoefficientInput]!): [ID!]!
-
-  
-  deleteIntegerLinearCoefficient(id: ID!): IntegerLinearCoefficient
-
-  
-  deleteIntegerLinearCoefficients(ids: [ID!]): [IntegerLinearCoefficient!]!
-
   
   addCostMatrices(input: AddCostMatricesInput!): ID
 
@@ -1061,24 +941,6 @@ type Mutation {
   deleteLocalSearchStrategys(ids: [ID!]): [LocalSearchStrategy!]!
 
   
-  addIntVarValue(input: AddIntVarValueInput!): ID
-
-  
-  addIntVarValues(input: [AddIntVarValueInput]!): [ID!]!
-
-  
-  updateIntVarValue(input: UpdateIntVarValueInput!): ID
-
-  
-  updateIntVarValues(input: [UpdateIntVarValueInput]!): [ID!]!
-
-  
-  deleteIntVarValue(id: ID!): IntVarValue
-
-  
-  deleteIntVarValues(ids: [ID!]): [IntVarValue!]!
-
-  
   addAssignmentSolution(input: AddAssignmentSolutionInput!): ID
 
   
@@ -1131,42 +993,6 @@ type Mutation {
 
   
   deleteVehiclePaths(ids: [ID!]): [VehiclePath!]!
-
-  
-  addRealLinearObjective(input: AddRealLinearObjectiveInput!): ID
-
-  
-  addRealLinearObjectives(input: [AddRealLinearObjectiveInput]!): [ID!]!
-
-  
-  updateRealLinearObjective(input: UpdateRealLinearObjectiveInput!): ID
-
-  
-  updateRealLinearObjectives(input: [UpdateRealLinearObjectiveInput]!): [ID!]!
-
-  
-  deleteRealLinearObjective(id: ID!): RealLinearObjective
-
-  
-  deleteRealLinearObjectives(ids: [ID!]): [RealLinearObjective!]!
-
-  
-  addIntegerCoefficientVector(input: AddIntegerCoefficientVectorInput!): ID
-
-  
-  addIntegerCoefficientVectors(input: [AddIntegerCoefficientVectorInput]!): [ID!]!
-
-  
-  updateIntegerCoefficientVector(input: UpdateIntegerCoefficientVectorInput!): ID
-
-  
-  updateIntegerCoefficientVectors(input: [UpdateIntegerCoefficientVectorInput]!): [ID!]!
-
-  
-  deleteIntegerCoefficientVector(id: ID!): IntegerCoefficientVector
-
-  
-  deleteIntegerCoefficientVectors(ids: [ID!]): [IntegerCoefficientVector!]!
 
   
   addObjective(input: AddObjectiveInput!): ID
@@ -1223,41 +1049,6 @@ type Mutation {
   deleteCPSolutions(ids: [ID!]): [CPSolution!]!
 
   
-  addConstraintUnion(input: AddConstraintUnionInput!): ID
-
-  
-  addConstraintUnions(input: [AddConstraintUnionInput]!): [ID!]!
-
-  
-  updateConstraintUnion(input: UpdateConstraintUnionInput!): ID
-
-  
-  updateConstraintUnions(input: [UpdateConstraintUnionInput]!): [ID!]!
-
-  
-  deleteConstraintUnion(id: ID!): ConstraintUnion
-
-  
-  deleteConstraintUnions(ids: [ID!]): [ConstraintUnion!]!
-
-  
-  addRealLinearVarValue(input: AddRealLinearVarValueInput!): ID
-
-  
-  addRealLinearVarValues(input: [AddRealLinearVarValueInput]!): [ID!]!
-
-  
-  updateRealLinearVarValue(input: UpdateRealLinearVarValueInput!): ID
-
-  
-  updateRealLinearVarValues(input: [UpdateRealLinearVarValueInput]!): [ID!]!
-
-  
-  deleteRealLinearVarValue(id: ID!): RealLinearVarValue
-
-  
-  deleteRealLinearVarValues(ids: [ID!]): [RealLinearVarValue!]!
-
   
   addRouteNode(input: AddRouteNodeInput!): ID
 
@@ -1277,41 +1068,6 @@ type Mutation {
   deleteRouteNodes(ids: [ID!]): [RouteNode!]!
 
   
-  addRealLinearVar(input: AddRealLinearVarInput!): ID
-
-  
-  addRealLinearVars(input: [AddRealLinearVarInput]!): [ID!]!
-
-  
-  updateRealLinearVar(input: UpdateRealLinearVarInput!): ID
-
-  
-  updateRealLinearVars(input: [UpdateRealLinearVarInput]!): [ID!]!
-
-  
-  deleteRealLinearVar(id: ID!): RealLinearVar
-
-  
-  deleteRealLinearVars(ids: [ID!]): [RealLinearVar!]!
-
-  
-  addRealLinearCoefficient(input: AddRealLinearCoefficientInput!): ID
-
-  
-  addRealLinearCoefficients(input: [AddRealLinearCoefficientInput]!): [ID!]!
-
-  
-  updateRealLinearCoefficient(input: UpdateRealLinearCoefficientInput!): ID
-
-  
-  updateRealLinearCoefficients(input: [UpdateRealLinearCoefficientInput]!): [ID!]!
-
-  
-  deleteRealLinearCoefficient(id: ID!): RealLinearCoefficient
-
-  
-  deleteRealLinearCoefficients(ids: [ID!]): [RealLinearCoefficient!]!
-
   
   addBoolVar(input: AddBoolVarInput!): ID
 
@@ -1329,24 +1085,6 @@ type Mutation {
 
   
   deleteBoolVars(ids: [ID!]): [BoolVar!]!
-
-  
-  addRealLinearSolution(input: AddRealLinearSolutionInput!): ID
-
-  
-  addRealLinearSolutions(input: [AddRealLinearSolutionInput]!): [ID!]!
-
-  
-  updateRealLinearSolution(input: UpdateRealLinearSolutionInput!): ID
-
-  
-  updateRealLinearSolutions(input: [UpdateRealLinearSolutionInput]!): [ID!]!
-
-  
-  deleteRealLinearSolution(id: ID!): RealLinearSolution
-
-  
-  deleteRealLinearSolutions(ids: [ID!]): [RealLinearSolution!]!
 
   
   addRow(input: AddRowInput!): ID
@@ -1383,42 +1121,6 @@ type Mutation {
 
   
   deleteAssignmentConstraints(ids: [ID!]): [AssignmentConstraint!]!
-
-  
-  addIntegerLinearConstraint(input: AddIntegerLinearConstraintInput!): ID
-
-  
-  addIntegerLinearConstraints(input: [AddIntegerLinearConstraintInput]!): [ID!]!
-
-  
-  updateIntegerLinearConstraint(input: UpdateIntegerLinearConstraintInput!): ID
-
-  
-  updateIntegerLinearConstraints(input: [UpdateIntegerLinearConstraintInput]!): [ID!]!
-
-  
-  deleteIntegerLinearConstraint(id: ID!): IntegerLinearConstraint
-
-  
-  deleteIntegerLinearConstraints(ids: [ID!]): [IntegerLinearConstraint!]!
-
-  
-  addIntegerLinearObjective(input: AddIntegerLinearObjectiveInput!): ID
-
-  
-  addIntegerLinearObjectives(input: [AddIntegerLinearObjectiveInput]!): [ID!]!
-
-  
-  updateIntegerLinearObjective(input: UpdateIntegerLinearObjectiveInput!): ID
-
-  
-  updateIntegerLinearObjectives(input: [UpdateIntegerLinearObjectiveInput]!): [ID!]!
-
-  
-  deleteIntegerLinearObjective(id: ID!): IntegerLinearObjective
-
-  
-  deleteIntegerLinearObjectives(ids: [ID!]): [IntegerLinearObjective!]!
 
   
   addConstraint(input: AddConstraintInput!): ID
@@ -1510,57 +1212,6 @@ type Query {
         ): RoutingSolution
   
 
-  allRealLinearConstraints(
-    
-    take: Int = 1000
-
-    
-    offset: Int = 0
-  ): [RealLinearConstraint!]!
-
-  
-  realLinearConstraint(id: ID!): RealLinearConstraint
-
-  
-  realLinearConstraints(ids: [ID]!): [RealLinearConstraint!]!
-
-  
-  realLinearConstraintFilter(
-    filters: [FieldFilterInput]!
-
-    
-    take: Int = 1000
-
-    
-    offset: Int = 0
-  ): [RealLinearConstraint!]!
-
-  
-  allAssignementConstraintXs(
-    
-    take: Int = 1000
-
-    
-    offset: Int = 0
-  ): [AssignementConstraintX!]!
-
-  
-  assignementConstraintX(id: ID!): AssignementConstraintX
-
-  
-  assignementConstraintXs(ids: [ID]!): [AssignementConstraintX!]!
-
-  
-  assignementConstraintXFilter(
-    filters: [FieldFilterInput]!
-
-    
-    take: Int = 1000
-
-    
-    offset: Int = 0
-  ): [AssignementConstraintX!]!
-
   
   allRoutingSolutions(
     
@@ -1640,31 +1291,6 @@ type Query {
   ): [IntVar!]!
 
   
-  allIntegerLinearCoefficients(
-    
-    take: Int = 1000
-
-    
-    offset: Int = 0
-  ): [IntegerLinearCoefficient!]!
-
-  
-  integerLinearCoefficient(id: ID!): IntegerLinearCoefficient
-
-  
-  integerLinearCoefficients(ids: [ID]!): [IntegerLinearCoefficient!]!
-
-  
-  integerLinearCoefficientFilter(
-    filters: [FieldFilterInput]!
-
-    
-    take: Int = 1000
-
-    
-    offset: Int = 0
-  ): [IntegerLinearCoefficient!]!
-
   
   allCostMatricess(
     
@@ -1692,31 +1318,6 @@ type Query {
   ): [CostMatrices!]!
 
   
-  allAssignmentObjectives(
-    
-    take: Int = 1000
-
-    
-    offset: Int = 0
-  ): [AssignmentObjective!]!
-
-  
-  assignmentObjective(id: ID!): AssignmentObjective
-
-  
-  assignmentObjectives(ids: [ID]!): [AssignmentObjective!]!
-
-  
-  assignmentObjectiveFilter(
-    filters: [FieldFilterInput]!
-
-    
-    take: Int = 1000
-
-    
-    offset: Int = 0
-  ): [AssignmentObjective!]!
-
   
   allRoutePairs(
     
@@ -2160,31 +1761,6 @@ type Query {
   ): [VehiclePath!]!
 
   
-  allRealLinearObjectives(
-    
-    take: Int = 1000
-
-    
-    offset: Int = 0
-  ): [RealLinearObjective!]!
-
-  
-  realLinearObjective(id: ID!): RealLinearObjective
-
-  
-  realLinearObjectives(ids: [ID]!): [RealLinearObjective!]!
-
-  
-  realLinearObjectiveFilter(
-    filters: [FieldFilterInput]!
-
-    
-    take: Int = 1000
-
-    
-    offset: Int = 0
-  ): [RealLinearObjective!]!
-
   
   allIntegerCoefficientVectors(
     
@@ -2316,32 +1892,6 @@ type Query {
   ): [ConstraintUnion!]!
 
   
-  allRealLinearVarValues(
-    
-    take: Int = 1000
-
-    
-    offset: Int = 0
-  ): [RealLinearVarValue!]!
-
-  
-  realLinearVarValue(id: ID!): RealLinearVarValue
-
-  
-  realLinearVarValues(ids: [ID]!): [RealLinearVarValue!]!
-
-  
-  realLinearVarValueFilter(
-    filters: [FieldFilterInput]!
-
-    
-    take: Int = 1000
-
-    
-    offset: Int = 0
-  ): [RealLinearVarValue!]!
-
-  
   allRouteNodes(
     
     take: Int = 1000
@@ -2368,58 +1918,6 @@ type Query {
   ): [RouteNode!]!
 
   
-  allRealLinearVars(
-    
-    take: Int = 1000
-
-    
-    offset: Int = 0
-  ): [RealLinearVar!]!
-
-  
-  realLinearVar(id: ID!): RealLinearVar
-
-  
-  realLinearVars(ids: [ID]!): [RealLinearVar!]!
-
-  
-  realLinearVarFilter(
-    filters: [FieldFilterInput]!
-
-    
-    take: Int = 1000
-
-    
-    offset: Int = 0
-  ): [RealLinearVar!]!
-
-  
-  allRealLinearCoefficients(
-    
-    take: Int = 1000
-
-    
-    offset: Int = 0
-  ): [RealLinearCoefficient!]!
-
-  
-  realLinearCoefficient(id: ID!): RealLinearCoefficient
-
-  
-  realLinearCoefficients(ids: [ID]!): [RealLinearCoefficient!]!
-
-  
-  realLinearCoefficientFilter(
-    filters: [FieldFilterInput]!
-
-    
-    take: Int = 1000
-
-    
-    offset: Int = 0
-  ): [RealLinearCoefficient!]!
-
-  
   allBoolVars(
     
     take: Int = 1000
@@ -2444,32 +1942,6 @@ type Query {
     
     offset: Int = 0
   ): [BoolVar!]!
-
-  
-  allRealLinearSolutions(
-    
-    take: Int = 1000
-
-    
-    offset: Int = 0
-  ): [RealLinearSolution!]!
-
-  
-  realLinearSolution(id: ID!): RealLinearSolution
-
-  
-  realLinearSolutions(ids: [ID]!): [RealLinearSolution!]!
-
-  
-  realLinearSolutionFilter(
-    filters: [FieldFilterInput]!
-
-    
-    take: Int = 1000
-
-    
-    offset: Int = 0
-  ): [RealLinearSolution!]!
 
   
   allRows(
@@ -2524,119 +1996,11 @@ type Query {
   ): [AssignmentConstraint!]!
 
   
-  allIntegerLinearConstraints(
-    
-    take: Int = 1000
-
-    
-    offset: Int = 0
-  ): [IntegerLinearConstraint!]!
-
-  
-  integerLinearConstraint(id: ID!): IntegerLinearConstraint
-
-  
-  integerLinearConstraints(ids: [ID]!): [IntegerLinearConstraint!]!
-
-  
-  integerLinearConstraintFilter(
-    filters: [FieldFilterInput]!
-
-    
-    take: Int = 1000
-
-    
-    offset: Int = 0
-  ): [IntegerLinearConstraint!]!
-
-  
-  allIntegerLinearObjectives(
-    
-    take: Int = 1000
-
-    
-    offset: Int = 0
-  ): [IntegerLinearObjective!]!
-
-  
-  integerLinearObjective(id: ID!): IntegerLinearObjective
-
-  
-  integerLinearObjectives(ids: [ID]!): [IntegerLinearObjective!]!
-
-  
-  integerLinearObjectiveFilter(
-    filters: [FieldFilterInput]!
-
-    
-    take: Int = 1000
-
-    
-    offset: Int = 0
-  ): [IntegerLinearObjective!]!
-
-  
-  allConstraints(
-    
-    take: Int = 1000
-
-    
-    offset: Int = 0
-  ): [Constraint!]!
-
-  
-  constraint(id: ID!): Constraint
-
-  
-  constraints(ids: [ID]!): [Constraint!]!
-
-  
-  constraintFilter(
-    filters: [FieldFilterInput]!
-
-    
-    take: Int = 1000
-
-    
-    offset: Int = 0
-  ): [Constraint!]!
-
-  
-  allCapacitys(
-    
-    take: Int = 1000
-
-    
-    offset: Int = 0
-  ): [Capacity!]!
-
-  
-  capacity(id: ID!): Capacity
-
-  
-  capacitys(ids: [ID]!): [Capacity!]!
-
-  
-  capacityFilter(
-    filters: [FieldFilterInput]!
-
-    
-    take: Int = 1000
-
-    
-    offset: Int = 0
-  ): [Capacity!]!
-
-  
-  info: Info!
-
   
   query(input: KindQueryInput!): InstanceSet
   queryJSON(input: KindQueryInput!): String
-  solveLinearCPProblem(vars: [IntVarAsInput], constraints: [IntegerLinearConstraintAsInput], objective: IntegerLinearObjectiveAsInput): CPSolution
   mipCBCSolver: String
   routingSolver(vehicles: [VehicleAsInput], requirements: [RequirementToTransportAsInput], costMatrix: CostMatricesAsInput, distanceMatrix: DistanceMatrixAsInput, objective: ObjectiveAsInput, routingTimeWindow: RoutingTimeWindowAsInput): RoutingSolution
-  solveRealLinearProblem(vars: [RealLinearVarAsInput!]!, constraints: [RealLinearConstraintAsInput!]!, objective: RealLinearObjectiveAsInput!): RealLinearSolution!
   solverAssignmentWithSizes(costs: CostMatricesAsInput, constraints: [AssignmentConstraintAsInput], objective: AssignmentObjectiveAsInput): AssignmentSolution
   CKGErrors: [String]
 }
@@ -2999,47 +2363,6 @@ input UpdateObjectiveInput {
   localSearchStrategy: ID
   timeLimit: Int
   solutionLimit: Int
-}
-
-
-input UpdateRealLinearCoefficientInput {
-  id: ID!
-  value: Float
-}
-
-
-input UpdateRealLinearConstraintInput {
-  id: ID!
-  lowerBound: Float
-  upperBound: Float
-  coefficients: [ID]
-}
-
-
-input UpdateRealLinearObjectiveInput {
-  id: ID!
-  coefficients: [ID]
-  maximize: Boolean
-}
-
-
-input UpdateRealLinearSolutionInput {
-  id: ID!
-  objectiveValue: Float
-  varValues: [ID]
-}
-
-
-input UpdateRealLinearVarInput {
-  id: ID!
-  lowerBound: Float
-  upperBound: Float
-}
-
-
-input UpdateRealLinearVarValueInput {
-  id: ID!
-  value: Float
 }
 
 

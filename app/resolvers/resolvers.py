@@ -20,24 +20,6 @@ from app.utils.helpers import save_data_to_file
 from app.logger import logger
 
 
-# logger = logging.getLogger("optimizer")
-# logger.setLevel(logging.DEBUG)
-
-# formatter = logging.Formatter(
-#     '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-
-# fh = logging.FileHandler('log_file_test.log')
-# fh.setLevel(logging.DEBUG)
-# fh.setFormatter(formatter)
-
-# ch = logging.StreamHandler()
-# ch.setLevel(logging.INFO)
-# ch.setFormatter(formatter)
-
-# logger.addHandler(fh)
-# logger.addHandler(ch)
-
-
 def resolve_pickups_and_deliveries(*_, cost, constraints, objectives):
 
     from app.utils.utils import get_solution

@@ -12,38 +12,6 @@ input AddActionInput {
 }
 
 
-input AddAssignementConstraintXInput {
-  id: ID
-  bounds: ID
-  coefficients: ID
-}
-
-
-input AddAssignmentConstraintInput {
-  id: ID
-  vectorOfCoefficients: ID
-  upperBound: Int
-  lowerBound: Int
-  nodeSet: Boolean
-}
-
-
-input AddAssignmentObjectiveInput {
-  id: ID
-  minimize: Boolean
-}
-
-
-input AddAssignmentSolutionInput {
-  id: ID
-  nodeSetA: [Int]
-  nodeSetB: [Int]
-  cost: [Int]
-  objectiveValue: Float
-  status: String
-}
-
-
 input AddBoolVarInput {
   id: ID
   value: Boolean
@@ -128,48 +96,6 @@ input AddObjectiveInput {
   timeLimit: Int
   solutionLimit: Int
 }
-
-
-input AddRealLinearCoefficientInput {
-  id: ID
-  value: Float!
-}
-
-
-input AddRealLinearConstraintInput {
-  id: ID
-  lowerBound: Float
-  upperBound: Float
-  coefficients: [ID!]
-}
-
-
-input AddRealLinearObjectiveInput {
-  id: ID
-  coefficients: [ID!]
-  maximize: Boolean!
-}
-
-
-input AddRealLinearSolutionInput {
-  id: ID
-  objectiveValue: Float!
-  varValues: [ID!]
-}
-
-
-input AddRealLinearVarInput {
-  id: ID
-  lowerBound: Float
-  upperBound: Float
-}
-
-
-input AddRealLinearVarValueInput {
-  id: ID
-  value: Float!
-}
-
 
 input AddRequirementToTransportInput {
   id: ID
@@ -283,47 +209,6 @@ enum AggregateOp {
   COUNT
 }
 
-type AssignementConstraintX {
-  id: ID!
-  bounds: Constraint
-  coefficients: IntegerCoefficientVector
-}
-
-type AssignmentConstraint {
-  id: ID!
-  vectorOfCoefficients: IntegerCoefficientVector
-  upperBound: Int
-  lowerBound: Int
-  nodeSet: Boolean
-}
-
-input AssignmentConstraintAsInput {
-  id: ID!
-  vectorOfCoefficients: IntegerCoefficientVectorAsInput
-  upperBound: Int
-  lowerBound: Int
-  nodeSet: Boolean
-}
-
-type AssignmentObjective {
-  id: ID!
-  minimize: Boolean
-}
-
-input AssignmentObjectiveAsInput {
-  id: ID!
-  minimize: Boolean
-}
-
-type AssignmentSolution {
-  id: ID!
-  nodeSetA: [Int]
-  nodeSetB: [Int]
-  cost: [Int]
-  objectiveValue: Float
-  status: String
-}
-
 type BoolVar {
   id: ID!
   value: Boolean
@@ -345,12 +230,6 @@ type Constraint {
   lowerBound: Int
 }
 
-type ConstraintUnion {
-  id: ID!
-  assignemt: AssignementConstraintX
-  realLinear: RealLinearConstraint
-}
-
 type CostMatrices {
   id: ID!
   costMatrices: [CostOfVehiclefRoutesMatrix]
@@ -369,13 +248,6 @@ type CostOfVehiclefRoutesMatrix {
 input CostOfVehiclefRoutesMatrixAsInput {
   id: ID!
   rows: [RowAsInput]
-}
-
-type CPSolution {
-  id: ID!
-  status: String
-  objective: Int
-  varValues: [IntVarValue]
 }
 
 scalar Date
@@ -516,70 +388,6 @@ type InstanceSet {
   
   records: [[FieldValue]]
 }
-
-type IntegerCoefficientVector {
-  id: ID!
-  value: [IntegerLinearCoefficient]
-}
-
-input IntegerCoefficientVectorAsInput {
-  id: ID!
-  value: [IntegerLinearCoefficientAsInput]
-}
-
-type IntegerLinearCoefficient {
-  id: ID!
-  value: Int
-}
-
-input IntegerLinearCoefficientAsInput {
-  id: ID!
-  value: Int
-}
-
-type IntegerLinearConstraint {
-  id: ID!
-  upperBound: Int
-  lowerBound: Int
-  coefficients: [IntegerLinearCoefficient]
-}
-
-input IntegerLinearConstraintAsInput {
-  id: ID!
-  upperBound: Int
-  lowerBound: Int
-  coefficients: [IntegerLinearCoefficientAsInput]
-}
-
-type IntegerLinearObjective {
-  id: ID!
-  coefficients: [IntegerLinearCoefficient]
-  maximize: Boolean
-}
-
-input IntegerLinearObjectiveAsInput {
-  id: ID!
-  coefficients: [IntegerLinearCoefficientAsInput]
-  maximize: Boolean
-}
-
-type IntVar {
-  id: ID!
-  lowerBound: Int
-  upperBound: Int
-}
-
-input IntVarAsInput {
-  id: ID!
-  lowerBound: Int
-  upperBound: Int
-}
-
-type IntVarValue {
-  id: ID!
-  value: Int
-}
-
 scalar JSON
 
 input KindQueryInput {
@@ -688,25 +496,6 @@ type Mutation {
   
   deleteCostMatricess(ids: [ID!]): [CostMatrices!]!
 
-  
-  addAssignmentObjective(input: AddAssignmentObjectiveInput!): ID
-
-  
-  addAssignmentObjectives(input: [AddAssignmentObjectiveInput]!): [ID!]!
-
-  
-  updateAssignmentObjective(input: UpdateAssignmentObjectiveInput!): ID
-
-  
-  updateAssignmentObjectives(input: [UpdateAssignmentObjectiveInput]!): [ID!]!
-
-  
-  deleteAssignmentObjective(id: ID!): AssignmentObjective
-
-  
-  deleteAssignmentObjectives(ids: [ID!]): [AssignmentObjective!]!
-
-  
   addRoutePair(input: AddRoutePairInput!): ID
 
   
@@ -941,24 +730,6 @@ type Mutation {
   deleteLocalSearchStrategys(ids: [ID!]): [LocalSearchStrategy!]!
 
   
-  addAssignmentSolution(input: AddAssignmentSolutionInput!): ID
-
-  
-  addAssignmentSolutions(input: [AddAssignmentSolutionInput]!): [ID!]!
-
-  
-  updateAssignmentSolution(input: UpdateAssignmentSolutionInput!): ID
-
-  
-  updateAssignmentSolutions(input: [UpdateAssignmentSolutionInput]!): [ID!]!
-
-  
-  deleteAssignmentSolution(id: ID!): AssignmentSolution
-
-  
-  deleteAssignmentSolutions(ids: [ID!]): [AssignmentSolution!]!
-
-  
   addDimension(input: AddDimensionInput!): ID
 
   
@@ -1031,25 +802,6 @@ type Mutation {
   deleteSteps(ids: [ID!]): [Step!]!
 
   
-  addCPSolution(input: AddCPSolutionInput!): ID
-
-  
-  addCPSolutions(input: [AddCPSolutionInput]!): [ID!]!
-
-  
-  updateCPSolution(input: UpdateCPSolutionInput!): ID
-
-  
-  updateCPSolutions(input: [UpdateCPSolutionInput]!): [ID!]!
-
-  
-  deleteCPSolution(id: ID!): CPSolution
-
-  
-  deleteCPSolutions(ids: [ID!]): [CPSolution!]!
-
-  
-  
   addRouteNode(input: AddRouteNodeInput!): ID
 
   
@@ -1103,60 +855,6 @@ type Mutation {
 
   
   deleteRows(ids: [ID!]): [Row!]!
-
-  
-  addAssignmentConstraint(input: AddAssignmentConstraintInput!): ID
-
-  
-  addAssignmentConstraints(input: [AddAssignmentConstraintInput]!): [ID!]!
-
-  
-  updateAssignmentConstraint(input: UpdateAssignmentConstraintInput!): ID
-
-  
-  updateAssignmentConstraints(input: [UpdateAssignmentConstraintInput]!): [ID!]!
-
-  
-  deleteAssignmentConstraint(id: ID!): AssignmentConstraint
-
-  
-  deleteAssignmentConstraints(ids: [ID!]): [AssignmentConstraint!]!
-
-  
-  addConstraint(input: AddConstraintInput!): ID
-
-  
-  addConstraints(input: [AddConstraintInput]!): [ID!]!
-
-  
-  updateConstraint(input: UpdateConstraintInput!): ID
-
-  
-  updateConstraints(input: [UpdateConstraintInput]!): [ID!]!
-
-  
-  deleteConstraint(id: ID!): Constraint
-
-  
-  deleteConstraints(ids: [ID!]): [Constraint!]!
-
-  
-  addCapacity(input: AddCapacityInput!): ID
-
-  
-  addCapacitys(input: [AddCapacityInput]!): [ID!]!
-
-  
-  updateCapacity(input: UpdateCapacityInput!): ID
-
-  
-  updateCapacitys(input: [UpdateCapacityInput]!): [ID!]!
-
-  
-  deleteCapacity(id: ID!): Capacity
-
-  
-  deleteCapacitys(ids: [ID!]): [Capacity!]!
 
   
   clearCache: Boolean!
@@ -1264,33 +962,6 @@ type Query {
     offset: Int = 0
   ): [FirstSolutionStrategy!]!
 
-  
-  allIntVars(
-    
-    take: Int = 1000
-
-    
-    offset: Int = 0
-  ): [IntVar!]!
-
-  
-  intVar(id: ID!): IntVar
-
-  
-  intVars(ids: [ID]!): [IntVar!]!
-
-  
-  intVarFilter(
-    filters: [FieldFilterInput]!
-
-    
-    take: Int = 1000
-
-    
-    offset: Int = 0
-  ): [IntVar!]!
-
-  
   
   allCostMatricess(
     
@@ -1656,59 +1327,7 @@ type Query {
     offset: Int = 0
   ): [LocalSearchStrategy!]!
 
-  
-  allIntVarValues(
-    
-    take: Int = 1000
 
-    
-    offset: Int = 0
-  ): [IntVarValue!]!
-
-  
-  intVarValue(id: ID!): IntVarValue
-
-  
-  intVarValues(ids: [ID]!): [IntVarValue!]!
-
-  
-  intVarValueFilter(
-    filters: [FieldFilterInput]!
-
-    
-    take: Int = 1000
-
-    
-    offset: Int = 0
-  ): [IntVarValue!]!
-
-  
-  allAssignmentSolutions(
-    
-    take: Int = 1000
-
-    
-    offset: Int = 0
-  ): [AssignmentSolution!]!
-
-  
-  assignmentSolution(id: ID!): AssignmentSolution
-
-  
-  assignmentSolutions(ids: [ID]!): [AssignmentSolution!]!
-
-  
-  assignmentSolutionFilter(
-    filters: [FieldFilterInput]!
-
-    
-    take: Int = 1000
-
-    
-    offset: Int = 0
-  ): [AssignmentSolution!]!
-
-  
   allDimensions(
     
     take: Int = 1000
@@ -1759,33 +1378,6 @@ type Query {
     
     offset: Int = 0
   ): [VehiclePath!]!
-
-  
-  
-  allIntegerCoefficientVectors(
-    
-    take: Int = 1000
-
-    
-    offset: Int = 0
-  ): [IntegerCoefficientVector!]!
-
-  
-  integerCoefficientVector(id: ID!): IntegerCoefficientVector
-
-  
-  integerCoefficientVectors(ids: [ID]!): [IntegerCoefficientVector!]!
-
-  
-  integerCoefficientVectorFilter(
-    filters: [FieldFilterInput]!
-
-    
-    take: Int = 1000
-
-    
-    offset: Int = 0
-  ): [IntegerCoefficientVector!]!
 
   
   allObjectives(
@@ -1839,59 +1431,7 @@ type Query {
     offset: Int = 0
   ): [Step!]!
 
-  
-  allCPSolutions(
-    
-    take: Int = 1000
 
-    
-    offset: Int = 0
-  ): [CPSolution!]!
-
-  
-  cPSolution(id: ID!): CPSolution
-
-  
-  cPSolutions(ids: [ID]!): [CPSolution!]!
-
-  
-  cPSolutionFilter(
-    filters: [FieldFilterInput]!
-
-    
-    take: Int = 1000
-
-    
-    offset: Int = 0
-  ): [CPSolution!]!
-
-  
-  allConstraintUnions(
-    
-    take: Int = 1000
-
-    
-    offset: Int = 0
-  ): [ConstraintUnion!]!
-
-  
-  constraintUnion(id: ID!): ConstraintUnion
-
-  
-  constraintUnions(ids: [ID]!): [ConstraintUnion!]!
-
-  
-  constraintUnionFilter(
-    filters: [FieldFilterInput]!
-
-    
-    take: Int = 1000
-
-    
-    offset: Int = 0
-  ): [ConstraintUnion!]!
-
-  
   allRouteNodes(
     
     take: Int = 1000
@@ -1970,98 +1510,11 @@ type Query {
   ): [Row!]!
 
   
-  allAssignmentConstraints(
-    
-    take: Int = 1000
-
-    
-    offset: Int = 0
-  ): [AssignmentConstraint!]!
-
-  
-  assignmentConstraint(id: ID!): AssignmentConstraint
-
-  
-  assignmentConstraints(ids: [ID]!): [AssignmentConstraint!]!
-
-  
-  assignmentConstraintFilter(
-    filters: [FieldFilterInput]!
-
-    
-    take: Int = 1000
-
-    
-    offset: Int = 0
-  ): [AssignmentConstraint!]!
-
-  
-  
   query(input: KindQueryInput!): InstanceSet
   queryJSON(input: KindQueryInput!): String
   mipCBCSolver: String
   routingSolver(vehicles: [VehicleAsInput], requirements: [RequirementToTransportAsInput], costMatrix: CostMatricesAsInput, distanceMatrix: DistanceMatrixAsInput, objective: ObjectiveAsInput, routingTimeWindow: RoutingTimeWindowAsInput): RoutingSolution
-  solverAssignmentWithSizes(costs: CostMatricesAsInput, constraints: [AssignmentConstraintAsInput], objective: AssignmentObjectiveAsInput): AssignmentSolution
   CKGErrors: [String]
-}
-
-type RealLinearCoefficient {
-  id: ID!
-  value: Float!
-}
-
-input RealLinearCoefficientAsInput {
-  id: ID!
-  value: Float!
-}
-
-type RealLinearConstraint {
-  id: ID!
-  lowerBound: Float
-  upperBound: Float
-  coefficients: [RealLinearCoefficient!]
-}
-
-input RealLinearConstraintAsInput {
-  id: ID!
-  lowerBound: Float
-  upperBound: Float
-  coefficients: [RealLinearCoefficientAsInput!]!
-}
-
-type RealLinearObjective {
-  id: ID!
-  coefficients: [RealLinearCoefficient!]
-  maximize: Boolean!
-}
-
-input RealLinearObjectiveAsInput {
-  id: ID!
-  coefficients: [RealLinearCoefficientAsInput!]!
-  maximize: Boolean!
-}
-
-type RealLinearSolution {
-  id: ID!
-  objectiveValue: Float!
-  varValues: [RealLinearVarValue!]!
-}
-
-type RealLinearVar {
-  id: ID!
-  lowerBound: Float
-  upperBound: Float
-}
-
-input RealLinearVarAsInput {
-  id: ID!
-  lowerBound: Float
-  upperBound: Float
-}
-
-type RealLinearVarValue {
-  id: ID!
-  value: Float!
 }
 
 type RequirementToTransport {
@@ -2200,38 +1653,6 @@ input UpdateActionInput {
 }
 
 
-input UpdateAssignementConstraintXInput {
-  id: ID!
-  bounds: ID
-  coefficients: ID
-}
-
-
-input UpdateAssignmentConstraintInput {
-  id: ID!
-  vectorOfCoefficients: ID
-  upperBound: Int
-  lowerBound: Int
-  nodeSet: Boolean
-}
-
-
-input UpdateAssignmentObjectiveInput {
-  id: ID!
-  minimize: Boolean
-}
-
-
-input UpdateAssignmentSolutionInput {
-  id: ID!
-  nodeSetA: [Int]
-  nodeSetB: [Int]
-  cost: [Int]
-  objectiveValue: Float
-  status: String
-}
-
-
 input UpdateBoolVarInput {
   id: ID!
   value: Boolean
@@ -2248,13 +1669,6 @@ input UpdateConstraintInput {
   id: ID!
   upperBound: Int
   lowerBound: Int
-}
-
-
-input UpdateConstraintUnionInput {
-  id: ID!
-  assignemt: ID
-  realLinear: ID
 }
 
 
@@ -2304,47 +1718,6 @@ input UpdateDistanceMatrixInput {
 input UpdateFirstSolutionStrategyInput {
   id: ID!
 }
-
-
-input UpdateIntegerCoefficientVectorInput {
-  id: ID!
-  value: [ID]
-}
-
-
-input UpdateIntegerLinearCoefficientInput {
-  id: ID!
-  value: Int
-}
-
-
-input UpdateIntegerLinearConstraintInput {
-  id: ID!
-  upperBound: Int
-  lowerBound: Int
-  coefficients: [ID]
-}
-
-
-input UpdateIntegerLinearObjectiveInput {
-  id: ID!
-  coefficients: [ID]
-  maximize: Boolean
-}
-
-
-input UpdateIntVarInput {
-  id: ID!
-  lowerBound: Int
-  upperBound: Int
-}
-
-
-input UpdateIntVarValueInput {
-  id: ID!
-  value: Int
-}
-
 
 input UpdateLoadWindowInput {
   id: ID!
